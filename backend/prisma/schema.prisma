@@ -1,0 +1,130 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model categories {
+  id_categorie String    @id @db.VarChar(25)
+  libelle      String    @db.VarChar(50)
+  id_equipe    String    @db.VarChar(25)
+  equipes      equipes   @relation(fields: [id_equipe], references: [id_equipe], map: "fk_categories_equipe")
+  tickets      tickets[]
+
+  @@unique([id_equipe, libelle], map: "uq_categories_equipe_libelle")
+}
+
+model equipes {
+  id_equipe    String         @id @db.VarChar(25)
+  nom          String         @unique(map: "nom") @db.VarChar(50)
+  categories   categories[]
+  utilisateurs utilisateurs[]
+}
+
+model historiqueactions {
+  id_action                                              String       @id @db.VarChar(25)
+  type_action                                            String       @db.VarChar(50)
+  date_action                                            DateTime     @default(now()) @db.DateTime(0)
+  detail                                                 String?      @db.VarChar(1000)
+  id_cible                                               String       @db.VarChar(25)
+  id_auteur                                              String       @db.VarChar(25)
+  id_ticket                                              String       @db.VarChar(25)
+  utilisateurs_historiqueactions_id_auteurToutilisateurs utilisateurs @relation("historiqueactions_id_auteurToutilisateurs", fields: [id_auteur], references: [id_utilisateur], map: "fk_actions_auteur_utilisateur")
+  utilisateurs_historiqueactions_id_cibleToutilisateurs  utilisateurs @relation("historiqueactions_id_cibleToutilisateurs", fields: [id_cible], references: [id_utilisateur], map: "fk_actions_cible_utilisateur")
+  tickets                                                tickets      @relation(fields: [id_ticket], references: [id_ticket], onDelete: Cascade, map: "fk_actions_ticket")
+
+  @@index([id_auteur], map: "ix_actions_id_auteur")
+  @@index([id_cible], map: "ix_actions_id_cible")
+  @@index([id_ticket], map: "ix_actions_id_ticket")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model messages {
+  id_message     String       @id @db.VarChar(25)
+  contenu        String       @db.VarChar(4000)
+  date_message   DateTime     @default(now()) @db.DateTime(0)
+  visibilite     String       @db.VarChar(25)
+  id_utilisateur String       @db.VarChar(25)
+  id_ticket      String       @db.VarChar(25)
+  tickets        tickets      @relation(fields: [id_ticket], references: [id_ticket], onDelete: Cascade, map: "fk_messages_ticket")
+  utilisateurs   utilisateurs @relation(fields: [id_utilisateur], references: [id_utilisateur], map: "fk_messages_utilisateur")
+
+  @@index([id_ticket], map: "ix_messages_id_ticket")
+  @@index([id_utilisateur], map: "ix_messages_id_utilisateur")
+  @@index([id_ticket, date_message], map: "ix_messages_ticket_date")
+}
+
+model piecejointes {
+  id_piece_jointe String       @id @db.VarChar(25)
+  nom_fichier     String       @db.VarChar(255)
+  url_path        String       @db.VarChar(255)
+  date_upload     DateTime     @default(now()) @db.DateTime(0)
+  id_utilisateur  String       @db.VarChar(25)
+  id_ticket       String       @db.VarChar(25)
+  tickets         tickets      @relation(fields: [id_ticket], references: [id_ticket], onDelete: Cascade, map: "fk_pieces_ticket")
+  utilisateurs    utilisateurs @relation(fields: [id_utilisateur], references: [id_utilisateur], map: "fk_pieces_utilisateur")
+
+  @@index([id_ticket], map: "ix_pieces_id_ticket")
+  @@index([id_utilisateur], map: "ix_pieces_id_utilisateur")
+}
+
+model roles {
+  id_role            String               @id @db.VarChar(25)
+  libelle            String               @unique(map: "libelle") @db.VarChar(50)
+  utilisateurs_roles utilisateurs_roles[]
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model tickets {
+  id_ticket                                           String              @id @db.VarChar(25)
+  titre                                               String              @db.VarChar(50)
+  date_creation                                       DateTime            @default(now()) @db.DateTime(0)
+  resultat                                            String?             @db.VarChar(25)
+  etat                                                String              @db.VarChar(25)
+  archived_at                                         DateTime?           @db.DateTime(0)
+  id_createur                                         String              @db.VarChar(25)
+  id_categorie                                        String              @db.VarChar(25)
+  id_agent_assigne                                    String?             @db.VarChar(25)
+  historiqueactions                                   historiqueactions[]
+  messages                                            messages[]
+  piecejointes                                        piecejointes[]
+  utilisateurs_tickets_id_agent_assigneToutilisateurs utilisateurs?       @relation("tickets_id_agent_assigneToutilisateurs", fields: [id_agent_assigne], references: [id_utilisateur], map: "fk_tickets_agent_assigne")
+  categories                                          categories          @relation(fields: [id_categorie], references: [id_categorie], map: "fk_tickets_categorie")
+  utilisateurs_tickets_id_createurToutilisateurs      utilisateurs        @relation("tickets_id_createurToutilisateurs", fields: [id_createur], references: [id_utilisateur], map: "fk_tickets_createur")
+
+  @@index([id_agent_assigne, etat], map: "ix_tickets_agent_etat")
+  @@index([etat, date_creation], map: "ix_tickets_etat_date")
+  @@index([id_agent_assigne], map: "ix_tickets_id_agent_assigne")
+  @@index([id_categorie], map: "ix_tickets_id_categorie")
+  @@index([id_createur], map: "ix_tickets_id_createur")
+}
+
+model utilisateurs {
+  id_utilisateur                                              String               @id @db.VarChar(25)
+  nom                                                         String               @db.VarChar(50)
+  prenom                                                      String               @db.VarChar(50)
+  email                                                       String               @unique(map: "email") @db.VarChar(255)
+  id_equipe                                                   String               @db.VarChar(25)
+  historiqueactions_historiqueactions_id_auteurToutilisateurs historiqueactions[]  @relation("historiqueactions_id_auteurToutilisateurs")
+  historiqueactions_historiqueactions_id_cibleToutilisateurs  historiqueactions[]  @relation("historiqueactions_id_cibleToutilisateurs")
+  messages                                                    messages[]
+  piecejointes                                                piecejointes[]
+  tickets_tickets_id_agent_assigneToutilisateurs              tickets[]            @relation("tickets_id_agent_assigneToutilisateurs")
+  tickets_tickets_id_createurToutilisateurs                   tickets[]            @relation("tickets_id_createurToutilisateurs")
+  equipes                                                     equipes              @relation(fields: [id_equipe], references: [id_equipe], map: "fk_utilisateurs_equipe")
+  utilisateurs_roles                                          utilisateurs_roles[]
+
+  @@index([id_equipe], map: "ix_utilisateurs_id_equipe")
+}
+
+model utilisateurs_roles {
+  id_utilisateur String       @db.VarChar(25)
+  id_role        String       @db.VarChar(25)
+  roles          roles        @relation(fields: [id_role], references: [id_role], onDelete: Cascade, map: "fk_ur_role")
+  utilisateurs   utilisateurs @relation(fields: [id_utilisateur], references: [id_utilisateur], onDelete: Cascade, map: "fk_ur_utilisateur")
+
+  @@id([id_utilisateur, id_role])
+  @@index([id_role], map: "ix_ur_id_role")
+}
