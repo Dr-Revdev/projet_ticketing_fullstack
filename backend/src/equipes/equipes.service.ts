@@ -40,6 +40,7 @@ export class EquipesService {
       if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
         throw new NotFoundException('Equipe non trouvée')
       }
+      throw err;
     }
   }
 }
