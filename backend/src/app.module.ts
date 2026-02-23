@@ -9,9 +9,10 @@ import { RolesModule } from './roles/roles.module';
 import { TicketsModule } from './tickets/tickets.module';
 import { MessagesModule } from './messages/messages.module';
 import { PieceJointesModule } from './piece-jointes/piece-jointes.module';
+import { HistoriqueActionsModule } from './historique-actions/historique-actions.module';
 
 @Module({
-  imports: [EquipesModule, PrismaModule, UtilisateursModule, CategoriesModule, RolesModule, TicketsModule, MessagesModule, PieceJointesModule],
+  imports: [EquipesModule, PrismaModule, UtilisateursModule, CategoriesModule, RolesModule, TicketsModule, MessagesModule, PieceJointesModule, HistoriqueActionsModule],
   controllers: [AppController],
   providers: [AppService],
 })

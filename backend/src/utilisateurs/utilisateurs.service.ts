@@ -33,7 +33,17 @@ export class UtilisateursService {
 
   async update(id_utilisateur: string, dto: UpdateUtilisateurDto) {
     try {
-      return await this.repo.updateById(id_utilisateur, dto);
+      const data: Prisma.utilisateursUpdateInput = {};
+
+      if (dto.nom !== undefined) data.nom = dto.nom;
+      if (dto.prenom !== undefined) data.prenom = dto.prenom;
+      if (dto.email !== undefined) data.email = dto.email;
+
+      if (dto.id_equipe !== undefined) {
+        data.equipes = { connect: { id_equipe: dto.id_equipe } };
+      }
+
+      return await this.repo.updateById(id_utilisateur, data);
     } catch (err) {
       if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
         throw new NotFoundException('Utilisateur non trouvé')
@@ -47,7 +57,7 @@ export class UtilisateursService {
       return await this.repo.deleteById(id_utilisateur);
     } catch (err) {
       if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
-        throw new NotFoundException('Utilistateur non trouvé')
+        throw new NotFoundException('Utilistateur non trouvé');
       }
       throw err;
     }
