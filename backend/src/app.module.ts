@@ -8,9 +8,10 @@ import { CategoriesModule } from './categories/categories.module';
 import { RolesModule } from './roles/roles.module';
 import { TicketsModule } from './tickets/tickets.module';
 import { MessagesModule } from './messages/messages.module';
+import { PieceJointesModule } from './piece-jointes/piece-jointes.module';
 
 @Module({
-  imports: [EquipesModule, PrismaModule, UtilisateursModule, CategoriesModule, RolesModule, TicketsModule, MessagesModule],
+  imports: [EquipesModule, PrismaModule, UtilisateursModule, CategoriesModule, RolesModule, TicketsModule, MessagesModule, PieceJointesModule],
   controllers: [AppController],
   providers: [AppService],
 })
