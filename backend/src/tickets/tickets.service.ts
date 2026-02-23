@@ -7,7 +7,7 @@ import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class TicketsService {
-  constructor(private readonly repo: TicketRepository) { }
+  constructor(private readonly repo: TicketRepository) {}
 
   create(dto: CreateTicketDto) {
     const data: Prisma.ticketsCreateInput = {

@@ -7,9 +7,10 @@ import { UtilisateursModule } from './utilisateurs/utilisateurs.module';
 import { CategoriesModule } from './categories/categories.module';
 import { RolesModule } from './roles/roles.module';
 import { TicketsModule } from './tickets/tickets.module';
+import { MessagesModule } from './messages/messages.module';
 
 @Module({
-  imports: [EquipesModule, PrismaModule, UtilisateursModule, CategoriesModule, RolesModule, TicketsModule],
+  imports: [EquipesModule, PrismaModule, UtilisateursModule, CategoriesModule, RolesModule, TicketsModule, MessagesModule],
   controllers: [AppController],
   providers: [AppService],
 })
