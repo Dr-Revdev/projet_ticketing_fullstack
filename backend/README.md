@@ -1,35 +1,49 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Backend — Projet Ticket
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API backend (helpdesk/tickets) construite avec NestJS + Prisma (MySQL/MariaDB).
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Prérequis
 
-## Description
+- Node.js (LTS) + npm
+- Base MySQL/MariaDB accessible
+- Variable d'environnement `DATABASE_URL` (connexion Prisma)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Installation
+
+```bash
+npm install
+```
+
+## Lancer
+
+```bash
+# development
+npm run start
+
+# watch mode
+npm run start:dev
+
+# production mode
+npm run start:prod
+```
+
+## Tests
+
+```bash
+# unit tests
+npm run test
+
+# e2e tests
+npm run test:e2e
+
+# test coverage
+npm run test:cov
+```
 
 ## Socle CRUD (API)
 
 ### Prérequis
 
-- Variable d'environnement `DATABASE_URL` (connexion MariaDB/MySQL pour Prisma).
 - Les identifiants (`id_*`) sont des chaînes et sont fournis par le client dans les DTO de création.
 
 ### Routes disponibles
@@ -99,6 +113,86 @@
 - `tickets.etat` est validé côté DTO (liste autorisée), car les `CHECK` SQL ne sont pas gérés par Prisma.
 - `messages.visibilite` est validé côté DTO (`public` | `interne`).
 - Sur `PATCH /tickets/:id`, `id_agent_assigne: null` désassigne l'agent (disconnect).
+
+## Règles métier & autorisations (v1)
+
+### Rôles (pyramide)
+
+Les rôles sont hiérarchiques : `Admin` ⟶ `Manager` ⟶ `Agent` ⟶ `User`.
+Un rôle hérite des droits des rôles en-dessous.
+
+### Périmètres (scope) d'accès aux tickets
+
+- **Admin** : accès à tous les tickets.
+- **Manager** : accès à tous les tickets de son équipe.
+- **Agent** : accès aux tickets (de son équipe) non assignés + aux tickets qui lui sont assignés.
+- **User** : accès uniquement à ses propres tickets (créateur).
+
+### Affectation d'un ticket à une équipe
+
+L'équipe d'un ticket est déduite via la catégorie : `ticket.id_categorie -> categories.id_equipe`.
+Le scope « tickets de l'équipe » se calcule donc via l'équipe de la catégorie.
+
+### Tickets (cycle de vie et modifications)
+
+- **Création** : `User+`.
+- **Modification par User** : aucune (hors ouverture). Les informations complémentaires passent par des messages.
+- **Fermeture sans résolution** : l'état `ferme` est utilisé (pas d'état `annule`).
+- **Fermeture par User (etat=ferme)** : autorisée uniquement si `etat` ∈ {`nouveau`, `en_attente`, `en_cours`}.
+- **Suppression** : action `Admin` uniquement.
+
+Actions (rôle minimum) :
+
+- **Changement d'état / résultat** : `Agent+`.
+- **Assignation / désassignation** : `Manager+`.
+- **Claim (auto-assignation)** : `Agent` si ticket non assigné et dans son équipe.
+
+### Messages (communication et visibilité)
+
+- Les messages sont **immutables** (pas de modification).
+- `visibilite=public` : visible à toute personne ayant accès au ticket.
+- `visibilite=interne` : réservé au staff (`Agent+`) ; non visible par `User`.
+
+### Actions métier à privilégier (plutôt que PATCH permissif)
+
+Pour éviter des `PATCH` trop ouverts et faciliter l'audit, ces actions métier sont recommandées :
+
+- **Assignation par Manager/Admin** : assigner un ticket à un agent.
+- **Claim par Agent** : un agent peut prendre un ticket non assigné (dans son équipe).
+- **Fermeture** : fermeture d'un ticket avec justification (voir ci-dessous).
+
+Règle de concurrence (claim) :
+
+- En cas de claim simultané, **premier arrivé = assigné**, le second reçoit une erreur.
+
+### Justification de fermeture (etat=ferme)
+
+En v1, la fermeture exige une justification **à la fois** :
+
+- un **message** de justification (généralement public)
+- une **entrée d'historique** structurée
+
+### Historique (audit)
+
+- Mode **mixte** :
+  - écriture **automatique par le backend** lors des actions métier (assignation, changement d'état, fermeture, etc.)
+  - un `POST /historique-actions` peut rester disponible pour des cas exceptionnels, mais doit être **strictement restreint** (v1 : `Admin` uniquement).
+
+### Suppression de messages / pièces jointes
+
+- Suppression autorisée : `Admin` uniquement.
+- Les messages restent immuables (pas de modification).
+
+### Suppression (soft delete + purge)
+
+- Par défaut, une suppression est un **soft delete** (archivage) : l'enregistrement reste en base.
+- Une **purge** (hard delete) peut exister en action séparée, réservée à `Admin`.
+- En v1, la purge hard est autorisée **uniquement après expiration de la rétention**.
+- La rétention est **fixe** (durée unique) et démarre à la **date de création** du ticket.
+
+Paramètre à définir (politique interne / obligations) :
+
+- Durée de rétention : **N** (jours/mois/années) pour tickets/messages/pièces jointes/historique.
 
 ## Checklist test manuel (Windows PowerShell)
 
@@ -183,7 +277,7 @@ curl.exe -X PATCH http://localhost:3000/tickets/t_001 -H "Content-Type: applicat
 Invoke-RestMethod -Method Post -Uri "http://localhost:3000/messages" -ContentType "application/json" -Body '{"id_message":"m_001","contenu":"Je n''arrive pas à me connecter","visibilite":"public","id_utilisateur":"u_alice","id_ticket":"t_001"}'
 Invoke-RestMethod -Method Get -Uri "http://localhost:3000/messages/m_001"
 # ou (curl binaire)
-curl.exe -X POST http://localhost:3000/messages -H "Content-Type: application/json" -d '{"id_message":"m_001","contenu":"Je n\u0027arrive pas à me connecter","visibilite":"public","id_utilisateur":"u_alice","id_ticket":"t_001"}'
+curl.exe -X POST http://localhost:3000/messages -H "Content-Type: application/json" -d '{"id_message":"m_001","contenu":"Je ne parviens pas à me connecter","visibilite":"public","id_utilisateur":"u_alice","id_ticket":"t_001"}'
 curl.exe http://localhost:3000/messages/m_001
 ```
 
@@ -220,74 +314,7 @@ Invoke-RestMethod -Method Delete -Uri "http://localhost:3000/roles/role_agent"
 Invoke-RestMethod -Method Delete -Uri "http://localhost:3000/equipes/eq_support"
 ```
 
-## Project setup
+## Attribution / licence
 
-```bash
-$ npm install
-```
-
-## Compile and run the project
-
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
-
-## Run tests
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Ce dépôt a été initialisé à partir du starter NestJS. NestJS est distribué sous licence MIT :
+https://github.com/nestjs/nest/blob/master/LICENSE
