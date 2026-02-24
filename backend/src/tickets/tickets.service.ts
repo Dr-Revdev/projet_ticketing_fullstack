@@ -4,10 +4,9 @@ import { UpdateTicketDto } from './dto/update-ticket.dto';
 import { TicketRepository } from './tickets.repository';
 import { Prisma } from '@prisma/client';
 
-
 @Injectable()
 export class TicketsService {
-  constructor(private readonly repo: TicketRepository) {}
+  constructor(private readonly repo: TicketRepository) { }
 
   create(dto: CreateTicketDto) {
     const data: Prisma.ticketsCreateInput = {
@@ -38,8 +37,8 @@ export class TicketsService {
 
   async findOne(id_ticket: string) {
     const ticket = await this.repo.findById(id_ticket);
-    if (!ticket) throw new NotFoundException('Ticket non trouvé')
-      return ticket;
+    if (!ticket) throw new NotFoundException('Ticket non trouvé');
+    return ticket;
   }
 
   async update(id_ticket: string, dto: UpdateTicketDto) {
@@ -73,8 +72,11 @@ export class TicketsService {
 
       return await this.repo.updateById(id_ticket, data);
     } catch (err) {
-      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
-        throw new NotFoundException('Ticket non trouvé')
+      if (
+        err instanceof Prisma.PrismaClientKnownRequestError &&
+        err.code === 'P2025'
+      ) {
+        throw new NotFoundException('Ticket non trouvé');
       }
       throw err;
     }
@@ -84,8 +86,11 @@ export class TicketsService {
     try {
       return await this.repo.deleteById(id_ticket);
     } catch (err) {
-      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
-        throw new NotFoundException('Ticket non trouvé')
+      if (
+        err instanceof Prisma.PrismaClientKnownRequestError &&
+        err.code === 'P2025'
+      ) {
+        throw new NotFoundException('Ticket non trouvé');
       }
       throw err;
     }

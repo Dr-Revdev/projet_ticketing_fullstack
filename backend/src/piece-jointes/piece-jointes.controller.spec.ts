@@ -6,9 +6,21 @@ describe('PieceJointesController', () => {
   let controller: PieceJointesController;
 
   beforeEach(async () => {
+    const serviceMock = {
+      create: jest.fn(),
+      findAll: jest.fn(),
+      findOne: jest.fn(),
+      remove: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [PieceJointesController],
-      providers: [PieceJointesService],
+      providers: [
+        {
+          provide: PieceJointesService,
+          useValue: serviceMock,
+        },
+      ],
     }).compile();
 
     controller = module.get<PieceJointesController>(PieceJointesController);

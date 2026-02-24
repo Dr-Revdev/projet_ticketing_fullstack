@@ -1,11 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
 import { MessagesService } from './messages.service';
 import { CreateMessageDto } from './dto/create-message.dto';
 // import { UpdateMessageDto } from './dto/update-message.dto';
 
 @Controller('messages')
 export class MessagesController {
-  constructor(private readonly messagesService: MessagesService) {}
+  constructor(private readonly messagesService: MessagesService) { }
 
   @Post()
   create(@Body() createMessageDto: CreateMessageDto) {
@@ -22,7 +22,7 @@ export class MessagesController {
     return this.messagesService.findOne(id_message);
   }
 
-/*  @Patch(':id')
+  /*  @Patch(':id')
   update(@Param('id') id_message: string, @Body() updateMessageDto: UpdateMessageDto) {
     return this.messagesService.update(id_message, updateMessageDto);
   }

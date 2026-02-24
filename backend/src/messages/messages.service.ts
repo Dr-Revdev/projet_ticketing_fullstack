@@ -6,7 +6,7 @@ import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class MessagesService {
-  constructor(private readonly repo: MessageRepository) {}
+  constructor(private readonly repo: MessageRepository) { }
 
   create(dto: CreateMessageDto) {
     const data: Prisma.messagesCreateInput = {
@@ -30,14 +30,14 @@ export class MessagesService {
 
   async findOne(id_message: string) {
     const message = await this.repo.findById(id_message);
-    if (!message) throw new NotFoundException('Message non trouvé')
-      return message;
+    if (!message) throw new NotFoundException('Message non trouvé');
+    return message;
   }
 
-// Pas d'update. Non nécessaire pour le moment.
-// Pas bon de toutes façons
+  // Pas d'update. Non nécessaire pour le moment.
+  // Pas bon de toutes façons
 
-/*  async update(id_message: string, dto: UpdateMessageDto) {
+  /*  async update(id_message: string, dto: UpdateMessageDto) {
     try {
       return await this.repo.updateById(id_message, dto);
     } catch (err) {
@@ -52,8 +52,11 @@ export class MessagesService {
     try {
       return await this.repo.deleteById(id_message);
     } catch (err) {
-      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
-        throw new NotFoundException('Message non trouvé')
+      if (
+        err instanceof Prisma.PrismaClientKnownRequestError &&
+        err.code === 'P2025'
+      ) {
+        throw new NotFoundException('Message non trouvé');
       }
       throw err;
     }

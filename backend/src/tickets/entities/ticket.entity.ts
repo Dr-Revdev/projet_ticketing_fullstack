@@ -1,1 +1,1 @@
-export class Ticket {}
+export class Ticket { }

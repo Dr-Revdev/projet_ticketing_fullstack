@@ -6,9 +6,22 @@ describe('TicketsController', () => {
   let controller: TicketsController;
 
   beforeEach(async () => {
+    const serviceMock = {
+      create: jest.fn(),
+      findAll: jest.fn(),
+      findOne: jest.fn(),
+      update: jest.fn(),
+      remove: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [TicketsController],
-      providers: [TicketsService],
+      providers: [
+        {
+          provide: TicketsService,
+          useValue: serviceMock,
+        },
+      ],
     }).compile();
 
     controller = module.get<TicketsController>(TicketsController);

@@ -1,9 +1,6 @@
-import { IsIn, IsNotEmpty, IsString } from "class-validator";
+import { IsIn, IsNotEmpty, IsString } from 'class-validator';
 
-export const MESSAGE_VISIBILITE = [
-    'public',
-    'interne',
-] as const;
+export const MESSAGE_VISIBILITE = ['public', 'interne'] as const;
 
 export class CreateMessageDto {
     @IsString()
@@ -25,5 +22,4 @@ export class CreateMessageDto {
     @IsString()
     @IsNotEmpty()
     id_ticket: string;
-
 }

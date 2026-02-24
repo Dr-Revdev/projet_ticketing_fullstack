@@ -6,12 +6,25 @@ describe('HistoriqueActionsController', () => {
   let controller: HistoriqueActionsController;
 
   beforeEach(async () => {
+    const serviceMock = {
+      create: jest.fn(),
+      findAll: jest.fn(),
+      findOne: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [HistoriqueActionsController],
-      providers: [HistoriqueActionsService],
+      providers: [
+        {
+          provide: HistoriqueActionsService,
+          useValue: serviceMock,
+        },
+      ],
     }).compile();
 
-    controller = module.get<HistoriqueActionsController>(HistoriqueActionsController);
+    controller = module.get<HistoriqueActionsController>(
+      HistoriqueActionsController,
+    );
   });
 
   it('should be defined', () => {

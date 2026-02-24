@@ -1,1 +1,1 @@
-export class HistoriqueAction {}
+export class HistoriqueAction { }

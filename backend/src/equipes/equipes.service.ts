@@ -18,16 +18,19 @@ export class EquipesService {
 
   async findOne(id_equipe: string) {
     const equipe = await this.repo.findById(id_equipe);
-    if (!equipe) throw new NotFoundException('Equipe non trouvée')
-      return equipe;
+    if (!equipe) throw new NotFoundException('Equipe non trouvée');
+    return equipe;
   }
 
   async update(id_equipe: string, dto: UpdateEquipeDto) {
     try {
       return await this.repo.updateById(id_equipe, dto);
     } catch (err) {
-      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
-        throw new NotFoundException('Equipe non trouvée')
+      if (
+        err instanceof Prisma.PrismaClientKnownRequestError &&
+        err.code === 'P2025'
+      ) {
+        throw new NotFoundException('Equipe non trouvée');
       }
       throw err;
     }
@@ -37,8 +40,11 @@ export class EquipesService {
     try {
       return await this.repo.deleteById(id_equipe);
     } catch (err) {
-      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
-        throw new NotFoundException('Equipe non trouvée')
+      if (
+        err instanceof Prisma.PrismaClientKnownRequestError &&
+        err.code === 'P2025'
+      ) {
+        throw new NotFoundException('Equipe non trouvée');
       }
       throw err;
     }

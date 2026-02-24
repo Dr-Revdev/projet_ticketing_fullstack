@@ -10,9 +10,21 @@ import { TicketsModule } from './tickets/tickets.module';
 import { MessagesModule } from './messages/messages.module';
 import { PieceJointesModule } from './piece-jointes/piece-jointes.module';
 import { HistoriqueActionsModule } from './historique-actions/historique-actions.module';
+import { UtilisateursRolesModule } from './utilisateurs-roles/utilisateurs-roles.module';
 
 @Module({
-  imports: [EquipesModule, PrismaModule, UtilisateursModule, CategoriesModule, RolesModule, TicketsModule, MessagesModule, PieceJointesModule, HistoriqueActionsModule],
+  imports: [
+    EquipesModule,
+    PrismaModule,
+    UtilisateursModule,
+    CategoriesModule,
+    RolesModule,
+    TicketsModule,
+    MessagesModule,
+    PieceJointesModule,
+    HistoriqueActionsModule,
+    UtilisateursRolesModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

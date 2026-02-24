@@ -1,1 +1,1 @@
-export class PieceJointe {}
+export class PieceJointe { }

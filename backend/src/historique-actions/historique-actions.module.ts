@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { HistoriqueActionsService } from './historique-actions.service';
 import { HistoriqueActionsController } from './historique-actions.controller';
-import { PrismaModule } from 'src/prisma/prisma.module';
+import { PrismaModule } from '../prisma/prisma.module';
 import { HistoriqueActionRepository } from './historique-actions.repository';
 
 @Module({
-  imports:[PrismaModule],
+  imports: [PrismaModule],
   controllers: [HistoriqueActionsController],
   providers: [HistoriqueActionsService, HistoriqueActionRepository],
 })

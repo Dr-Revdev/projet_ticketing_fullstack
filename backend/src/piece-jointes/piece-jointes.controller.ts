@@ -1,11 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
 import { PieceJointesService } from './piece-jointes.service';
 import { CreatePieceJointeDto } from './dto/create-piece-jointe.dto';
 // import { UpdatePieceJointeDto } from './dto/update-piece-jointe.dto';
 
 @Controller('piece-jointes')
 export class PieceJointesController {
-  constructor(private readonly pieceJointesService: PieceJointesService) {}
+  constructor(private readonly pieceJointesService: PieceJointesService) { }
 
   @Post()
   create(@Body() createPieceJointeDto: CreatePieceJointeDto) {

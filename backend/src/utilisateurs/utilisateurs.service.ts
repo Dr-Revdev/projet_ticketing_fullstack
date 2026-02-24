@@ -6,7 +6,7 @@ import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class UtilisateursService {
-  constructor(private readonly repo: UtilisateurRepository) {}
+  constructor(private readonly repo: UtilisateurRepository) { }
 
   create(dto: CreateUtilisateurDto) {
     const data: Prisma.utilisateursCreateInput = {
@@ -27,8 +27,8 @@ export class UtilisateursService {
 
   async findOne(id_utilisateur: string) {
     const utilisateur = await this.repo.findById(id_utilisateur);
-    if (!utilisateur) throw new NotFoundException('Utilisateur non trouvé')
-      return utilisateur;
+    if (!utilisateur) throw new NotFoundException('Utilisateur non trouvé');
+    return utilisateur;
   }
 
   async update(id_utilisateur: string, dto: UpdateUtilisateurDto) {
@@ -45,8 +45,11 @@ export class UtilisateursService {
 
       return await this.repo.updateById(id_utilisateur, data);
     } catch (err) {
-      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
-        throw new NotFoundException('Utilisateur non trouvé')
+      if (
+        err instanceof Prisma.PrismaClientKnownRequestError &&
+        err.code === 'P2025'
+      ) {
+        throw new NotFoundException('Utilisateur non trouvé');
       }
       throw err;
     }
@@ -56,7 +59,10 @@ export class UtilisateursService {
     try {
       return await this.repo.deleteById(id_utilisateur);
     } catch (err) {
-      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
+      if (
+        err instanceof Prisma.PrismaClientKnownRequestError &&
+        err.code === 'P2025'
+      ) {
         throw new NotFoundException('Utilistateur non trouvé');
       }
       throw err;

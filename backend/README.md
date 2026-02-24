@@ -25,6 +25,201 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+## Socle CRUD (API)
+
+### Prérequis
+
+- Variable d'environnement `DATABASE_URL` (connexion MariaDB/MySQL pour Prisma).
+- Les identifiants (`id_*`) sont des chaînes et sont fournis par le client dans les DTO de création.
+
+### Routes disponibles
+
+- Équipes
+  - `POST /equipes`
+  - `GET /equipes`
+  - `GET /equipes/:id`
+  - `PATCH /equipes/:id`
+  - `DELETE /equipes/:id`
+
+- Utilisateurs
+  - `POST /utilisateurs`
+  - `GET /utilisateurs`
+  - `GET /utilisateurs/:id`
+  - `PATCH /utilisateurs/:id`
+  - `DELETE /utilisateurs/:id`
+
+- Catégories
+  - `POST /categories`
+  - `GET /categories`
+  - `GET /categories/:id`
+  - `PATCH /categories/:id`
+  - `DELETE /categories/:id`
+
+- Rôles
+  - `POST /roles`
+  - `GET /roles`
+  - `GET /roles/:id`
+  - `PATCH /roles/:id`
+  - `DELETE /roles/:id`
+
+- Tickets
+  - `POST /tickets`
+  - `GET /tickets`
+  - `GET /tickets/:id`
+  - `PATCH /tickets/:id`
+  - `DELETE /tickets/:id`
+
+- Messages (immutables)
+  - `POST /messages`
+  - `GET /messages`
+  - `GET /messages/:id`
+  - `DELETE /messages/:id`
+  - Pas de `PATCH` (messages considérés immuables)
+
+- Pièces jointes (immutables)
+  - `POST /piece-jointes`
+  - `GET /piece-jointes`
+  - `GET /piece-jointes/:id`
+  - `DELETE /piece-jointes/:id`
+  - Pas de `PATCH`
+
+- Historique actions (append-only)
+  - `POST /historique-actions`
+  - `GET /historique-actions`
+  - `GET /historique-actions/:id`
+  - Pas de `PATCH` / `DELETE`
+
+- Rôles d'un utilisateur (endpoints métier)
+  - `GET /utilisateurs/:id_utilisateur/roles`
+  - `POST /utilisateurs/:id_utilisateur/roles` avec body `{ "id_role": "..." }`
+  - `DELETE /utilisateurs/:id_utilisateur/roles/:id_role`
+
+### Règles/validations importantes
+
+- `tickets.etat` est validé côté DTO (liste autorisée), car les `CHECK` SQL ne sont pas gérés par Prisma.
+- `messages.visibilite` est validé côté DTO (`public` | `interne`).
+- Sur `PATCH /tickets/:id`, `id_agent_assigne: null` désassigne l'agent (disconnect).
+
+## Checklist test manuel (Windows PowerShell)
+
+Hypothèses : API sur `http://localhost:3000` et la DB est configurée via `DATABASE_URL`.
+
+Note Windows : dans **Windows PowerShell**, la commande `curl` est souvent un **alias** de `Invoke-WebRequest`, ce qui casse les exemples type Linux/macOS.
+
+- Option A (recommandée) : `Invoke-RestMethod` (simple, JSON natif)
+- Option B : utiliser explicitement `curl.exe` (le binaire), pas `curl`
+
+1) Démarrer l'API
+
+```bash
+npm run start:dev
+```
+
+2) Créer une équipe
+
+```bash
+Invoke-RestMethod -Method Post -Uri "http://localhost:3000/equipes" -ContentType "application/json" -Body '{"id_equipe":"eq_support","nom":"Support"}'
+# ou (curl binaire)
+curl.exe -X POST http://localhost:3000/equipes -H "Content-Type: application/json" -d '{"id_equipe":"eq_support","nom":"Support"}'
+```
+
+3) Créer un rôle
+
+```bash
+Invoke-RestMethod -Method Post -Uri "http://localhost:3000/roles" -ContentType "application/json" -Body '{"id_role":"role_agent","libelle":"Agent"}'
+# ou (curl binaire)
+curl.exe -X POST http://localhost:3000/roles -H "Content-Type: application/json" -d '{"id_role":"role_agent","libelle":"Agent"}'
+```
+
+4) Créer un utilisateur (lié à l'équipe)
+
+```bash
+Invoke-RestMethod -Method Post -Uri "http://localhost:3000/utilisateurs" -ContentType "application/json" -Body '{"id_utilisateur":"u_alice","nom":"Alice","prenom":"Dupont","email":"alice@example.com","id_equipe":"eq_support"}'
+# ou (curl binaire)
+curl.exe -X POST http://localhost:3000/utilisateurs -H "Content-Type: application/json" -d '{"id_utilisateur":"u_alice","nom":"Alice","prenom":"Dupont","email":"alice@example.com","id_equipe":"eq_support"}'
+```
+
+5) Assigner un rôle à l'utilisateur
+
+```bash
+Invoke-RestMethod -Method Post -Uri "http://localhost:3000/utilisateurs/u_alice/roles" -ContentType "application/json" -Body '{"id_role":"role_agent"}'
+Invoke-RestMethod -Method Get -Uri "http://localhost:3000/utilisateurs/u_alice/roles"
+# ou (curl binaire)
+curl.exe -X POST http://localhost:3000/utilisateurs/u_alice/roles -H "Content-Type: application/json" -d '{"id_role":"role_agent"}'
+curl.exe http://localhost:3000/utilisateurs/u_alice/roles
+```
+
+6) Créer une catégorie (liée à l'équipe)
+
+```bash
+Invoke-RestMethod -Method Post -Uri "http://localhost:3000/categories" -ContentType "application/json" -Body '{"id_categorie":"cat_app","libelle":"Application","id_equipe":"eq_support"}'
+# ou (curl binaire)
+curl.exe -X POST http://localhost:3000/categories -H "Content-Type: application/json" -d '{"id_categorie":"cat_app","libelle":"Application","id_equipe":"eq_support"}'
+```
+
+7) Créer un ticket (lié au créateur + catégorie)
+
+```bash
+Invoke-RestMethod -Method Post -Uri "http://localhost:3000/tickets" -ContentType "application/json" -Body '{"id_ticket":"t_001","titre":"Bug connexion","etat":"nouveau","id_createur":"u_alice","id_categorie":"cat_app"}'
+Invoke-RestMethod -Method Get -Uri "http://localhost:3000/tickets/t_001"
+# ou (curl binaire)
+curl.exe -X POST http://localhost:3000/tickets -H "Content-Type: application/json" -d '{"id_ticket":"t_001","titre":"Bug connexion","etat":"nouveau","id_createur":"u_alice","id_categorie":"cat_app"}'
+curl.exe http://localhost:3000/tickets/t_001
+```
+
+8) Assigner puis désassigner un agent
+
+```bash
+Invoke-RestMethod -Method Patch -Uri "http://localhost:3000/tickets/t_001" -ContentType "application/json" -Body '{"id_agent_assigne":"u_alice"}'
+Invoke-RestMethod -Method Patch -Uri "http://localhost:3000/tickets/t_001" -ContentType "application/json" -Body '{"id_agent_assigne":null}'
+# ou (curl binaire)
+curl.exe -X PATCH http://localhost:3000/tickets/t_001 -H "Content-Type: application/json" -d '{"id_agent_assigne":"u_alice"}'
+curl.exe -X PATCH http://localhost:3000/tickets/t_001 -H "Content-Type: application/json" -d '{"id_agent_assigne":null}'
+```
+
+9) Créer un message (immutabilité)
+
+```bash
+Invoke-RestMethod -Method Post -Uri "http://localhost:3000/messages" -ContentType "application/json" -Body '{"id_message":"m_001","contenu":"Je n''arrive pas à me connecter","visibilite":"public","id_utilisateur":"u_alice","id_ticket":"t_001"}'
+Invoke-RestMethod -Method Get -Uri "http://localhost:3000/messages/m_001"
+# ou (curl binaire)
+curl.exe -X POST http://localhost:3000/messages -H "Content-Type: application/json" -d '{"id_message":"m_001","contenu":"Je n\u0027arrive pas à me connecter","visibilite":"public","id_utilisateur":"u_alice","id_ticket":"t_001"}'
+curl.exe http://localhost:3000/messages/m_001
+```
+
+10) Créer une pièce jointe
+
+```bash
+Invoke-RestMethod -Method Post -Uri "http://localhost:3000/piece-jointes" -ContentType "application/json" -Body '{"id_piece_jointe":"pj_001","nom_fichier":"capture.png","url_path":"/uploads/capture.png","id_utilisateur":"u_alice","id_ticket":"t_001"}'
+Invoke-RestMethod -Method Get -Uri "http://localhost:3000/piece-jointes/pj_001"
+# ou (curl binaire)
+curl.exe -X POST http://localhost:3000/piece-jointes -H "Content-Type: application/json" -d '{"id_piece_jointe":"pj_001","nom_fichier":"capture.png","url_path":"/uploads/capture.png","id_utilisateur":"u_alice","id_ticket":"t_001"}'
+curl.exe http://localhost:3000/piece-jointes/pj_001
+```
+
+11) Ajouter une entrée d'historique (append-only)
+
+```bash
+Invoke-RestMethod -Method Post -Uri "http://localhost:3000/historique-actions" -ContentType "application/json" -Body '{"id_action":"ha_001","type_action":"creation_ticket","detail":"Ticket créé","id_cible":"u_alice","id_auteur":"u_alice","id_ticket":"t_001"}'
+Invoke-RestMethod -Method Get -Uri "http://localhost:3000/historique-actions/ha_001"
+# ou (curl binaire)
+curl.exe -X POST http://localhost:3000/historique-actions -H "Content-Type: application/json" -d '{"id_action":"ha_001","type_action":"creation_ticket","detail":"Ticket créé","id_cible":"u_alice","id_auteur":"u_alice","id_ticket":"t_001"}'
+curl.exe http://localhost:3000/historique-actions/ha_001
+```
+
+12) Nettoyage (optionnel)
+
+```bash
+Invoke-RestMethod -Method Delete -Uri "http://localhost:3000/messages/m_001"
+Invoke-RestMethod -Method Delete -Uri "http://localhost:3000/piece-jointes/pj_001"
+Invoke-RestMethod -Method Delete -Uri "http://localhost:3000/tickets/t_001"
+Invoke-RestMethod -Method Delete -Uri "http://localhost:3000/categories/cat_app"
+Invoke-RestMethod -Method Delete -Uri "http://localhost:3000/utilisateurs/u_alice/roles/role_agent"
+Invoke-RestMethod -Method Delete -Uri "http://localhost:3000/utilisateurs/u_alice"
+Invoke-RestMethod -Method Delete -Uri "http://localhost:3000/roles/role_agent"
+Invoke-RestMethod -Method Delete -Uri "http://localhost:3000/equipes/eq_support"
+```
+
 ## Project setup
 
 ```bash

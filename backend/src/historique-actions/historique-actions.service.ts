@@ -5,7 +5,7 @@ import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class HistoriqueActionsService {
-  constructor(private readonly repo: HistoriqueActionRepository) {}
+  constructor(private readonly repo: HistoriqueActionRepository) { }
 
   create(dto: CreateHistoriqueActionDto) {
     const data: Prisma.historiqueactionsCreateInput = {
@@ -32,7 +32,7 @@ export class HistoriqueActionsService {
 
   async findOne(id_action: string) {
     const action = await this.repo.findById(id_action);
-    if (!action) throw new NotFoundException('Action non trouvée')
-      return action;
+    if (!action) throw new NotFoundException('Action non trouvée');
+    return action;
   }
 }

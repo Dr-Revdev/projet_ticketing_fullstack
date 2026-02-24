@@ -6,7 +6,7 @@ import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class PieceJointesService {
-  constructor(private readonly repo: PieceJointeRepository) {}
+  constructor(private readonly repo: PieceJointeRepository) { }
 
   create(dto: CreatePieceJointeDto) {
     const data: Prisma.piecejointesCreateInput = {
@@ -30,8 +30,8 @@ export class PieceJointesService {
 
   async findOne(id_piece_jointe: string) {
     const piece_jointe = await this.repo.findById(id_piece_jointe);
-    if (!piece_jointe) throw new NotFoundException('Piece jointe non trouvée')
-      return piece_jointe;
+    if (!piece_jointe) throw new NotFoundException('Piece jointe non trouvée');
+    return piece_jointe;
   }
 
   // update(id: number, updatePieceJointeDto: UpdatePieceJointeDto) {
@@ -42,8 +42,11 @@ export class PieceJointesService {
     try {
       return await this.repo.deleteById(id_piece_jointe);
     } catch (err) {
-      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
-        throw new NotFoundException('Pièce jointe non trouvée')
+      if (
+        err instanceof Prisma.PrismaClientKnownRequestError &&
+        err.code === 'P2025'
+      ) {
+        throw new NotFoundException('Pièce jointe non trouvée');
       }
       throw err;
     }

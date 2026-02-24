@@ -1,10 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { HistoriqueActionsService } from './historique-actions.service';
 import { CreateHistoriqueActionDto } from './dto/create-historique-action.dto';
 
 @Controller('historique-actions')
 export class HistoriqueActionsController {
-  constructor(private readonly historiqueActionsService: HistoriqueActionsService) {}
+  constructor(
+    private readonly historiqueActionsService: HistoriqueActionsService,
+  ) { }
 
   @Post()
   create(@Body() createHistoriqueActionDto: CreateHistoriqueActionDto) {

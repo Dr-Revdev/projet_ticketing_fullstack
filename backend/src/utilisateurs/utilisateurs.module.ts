@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { UtilisateursService } from './utilisateurs.service';
 import { UtilisateursController } from './utilisateurs.controller';
-import { PrismaModule } from 'src/prisma/prisma.module';
+import { PrismaModule } from '../prisma/prisma.module';
 import { UtilisateurRepository } from './utilisateurs.repository';
 
 @Module({
-  imports:[PrismaModule],
+  imports: [PrismaModule],
   controllers: [UtilisateursController],
   providers: [UtilisateursService, UtilisateurRepository],
 })

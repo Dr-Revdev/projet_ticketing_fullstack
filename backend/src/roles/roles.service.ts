@@ -6,7 +6,7 @@ import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class RolesService {
-  constructor(private readonly repo: RoleRepository) {}
+  constructor(private readonly repo: RoleRepository) { }
 
   create(dto: CreateRoleDto) {
     return this.repo.create(dto);
@@ -18,16 +18,19 @@ export class RolesService {
 
   async findOne(id_role: string) {
     const role = await this.repo.findById(id_role);
-    if (!role) throw new NotFoundException('Role non trouvé')
-      return role;
+    if (!role) throw new NotFoundException('Role non trouvé');
+    return role;
   }
 
   async update(id_role: string, dto: UpdateRoleDto) {
     try {
       return await this.repo.updateById(id_role, dto);
     } catch (err) {
-      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
-        throw new NotFoundException('Role non trouvé')
+      if (
+        err instanceof Prisma.PrismaClientKnownRequestError &&
+        err.code === 'P2025'
+      ) {
+        throw new NotFoundException('Role non trouvé');
       }
       throw err;
     }
@@ -37,8 +40,11 @@ export class RolesService {
     try {
       return await this.repo.deleteById(id_role);
     } catch (err) {
-      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
-        throw new NotFoundException('Role non trouvé')
+      if (
+        err instanceof Prisma.PrismaClientKnownRequestError &&
+        err.code === 'P2025'
+      ) {
+        throw new NotFoundException('Role non trouvé');
       }
       throw err;
     }
