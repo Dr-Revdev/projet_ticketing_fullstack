@@ -3,17 +3,21 @@ import { CreateUtilisateurDto } from './dto/create-utilisateur.dto';
 import { UpdateUtilisateurDto } from './dto/update-utilisateur.dto';
 import { UtilisateurRepository } from './utilisateurs.repository';
 import { Prisma } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UtilisateursService {
   constructor(private readonly repo: UtilisateurRepository) { }
 
-  create(dto: CreateUtilisateurDto) {
+  async create(dto: CreateUtilisateurDto) {
+    const password_hash = await bcrypt.hash(dto.password, 10)
+
     const data: Prisma.utilisateursCreateInput = {
       id_utilisateur: dto.id_utilisateur,
       nom: dto.nom,
       prenom: dto.prenom,
       email: dto.email,
+      password_hash,
       equipes: {
         connect: { id_equipe: dto.id_equipe },
       },
@@ -38,6 +42,10 @@ export class UtilisateursService {
       if (dto.nom !== undefined) data.nom = dto.nom;
       if (dto.prenom !== undefined) data.prenom = dto.prenom;
       if (dto.email !== undefined) data.email = dto.email;
+
+      if (dto.password !== undefined) {
+        data.password_hash = await bcrypt.hash(dto.password, 10);
+      }
 
       if (dto.id_equipe !== undefined) {
         data.equipes = { connect: { id_equipe: dto.id_equipe } };

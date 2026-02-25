@@ -11,6 +11,7 @@ import { MessagesModule } from './messages/messages.module';
 import { PieceJointesModule } from './piece-jointes/piece-jointes.module';
 import { HistoriqueActionsModule } from './historique-actions/historique-actions.module';
 import { UtilisateursRolesModule } from './utilisateurs-roles/utilisateurs-roles.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { UtilisateursRolesModule } from './utilisateurs-roles/utilisateurs-roles
     PieceJointesModule,
     HistoriqueActionsModule,
     UtilisateursRolesModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

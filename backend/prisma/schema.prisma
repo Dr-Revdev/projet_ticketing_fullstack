@@ -107,6 +107,8 @@ model utilisateurs {
   prenom                                                      String               @db.VarChar(50)
   email                                                       String               @unique(map: "email") @db.VarChar(255)
   id_equipe                                                   String               @db.VarChar(25)
+  password_hash                                               String               @db.VarChar(255)
+  derniere_connexion                                          DateTime?            @db.DateTime(0)
   historiqueactions_historiqueactions_id_auteurToutilisateurs historiqueactions[]  @relation("historiqueactions_id_auteurToutilisateurs")
   historiqueactions_historiqueactions_id_cibleToutilisateurs  historiqueactions[]  @relation("historiqueactions_id_cibleToutilisateurs")
   messages                                                    messages[]
