@@ -12,9 +12,14 @@ import { PieceJointesModule } from './piece-jointes/piece-jointes.module';
 import { HistoriqueActionsModule } from './historique-actions/historique-actions.module';
 import { UtilisateursRolesModule } from './utilisateurs-roles/utilisateurs-roles.module';
 import { AuthModule } from './auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env'
+    }),
     EquipesModule,
     PrismaModule,
     UtilisateursModule,
