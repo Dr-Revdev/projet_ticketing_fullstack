@@ -18,6 +18,7 @@ export class UtilisateursService {
       prenom: dto.prenom,
       email: dto.email,
       password_hash,
+      password_changed_at: new Date(),
       equipes: {
         connect: { id_equipe: dto.id_equipe },
       },
@@ -45,6 +46,7 @@ export class UtilisateursService {
 
       if (dto.password !== undefined) {
         data.password_hash = await bcrypt.hash(dto.password, 10);
+        data.password_changed_at = new Date();
       }
 
       if (dto.id_equipe !== undefined) {
