@@ -31,7 +31,19 @@ export class UtilisateurRepository {
   }
 
   async findAuthByEmail(email: string) {
-    return this.prisma.utilisateurs.findUnique({ where: { email }, select: { id_utilisateur: true, password_hash: true, id_equipe: true }, });
+    return this.prisma.utilisateurs.findUnique({
+      where:
+      {
+        email
+      },
+      select: 
+      {
+        id_utilisateur: true,
+        password_hash: true,
+        id_equipe: true,
+        password_changed_at: true
+      },
+    });
   }
 
   async touchDerniereConnexion(id_utilisateur: string, at: Date = new Date()): Promise<void> {

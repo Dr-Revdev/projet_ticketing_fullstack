@@ -20,10 +20,19 @@ export class AuthService {
 
     await this.repo.touchDerniereConnexion(user.id_utilisateur);
 
+    if (user.password_changed_at == null) {
+      const reset_token = await this.jwt.signAsync(
+        { sub: user.id_utilisateur, purpose: 'pwd_reset' },
+        { expiresIn: '10m' },
+      );
+
+      return { must_change_password: true, reset_token };
+    }
+
     const access_token = await this.jwt.signAsync({
       sub: user.id_utilisateur,
-    })
+    });
 
-    return { access_token }
+    return { access_token };
   }
 }
