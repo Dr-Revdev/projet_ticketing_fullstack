@@ -7,6 +7,7 @@ import { AuthController } from './auth.controller';
 import { UtilisateursModule } from '../utilisateurs/utilisateurs.module';
 import type { StringValue } from 'ms';
 import { JwtStrategy } from './jwt.strategy';
+import { JwtResetStrategy } from './jwt-reset.strategy';
 
 @Module({
   imports: [
@@ -27,6 +28,6 @@ import { JwtStrategy } from './jwt.strategy';
     })
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, JwtResetStrategy],
 })
 export class AuthModule {}

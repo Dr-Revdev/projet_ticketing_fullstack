@@ -53,6 +53,15 @@ export class UtilisateurRepository {
     });
   }
 
+  async setPasswordFirstLogin(userId: string, password_hash: string): Promise<boolean> {
+    const res = await this.prisma.utilisateurs.updateMany({
+      where: { id_utilisateur: userId, password_changed_at: null },
+      data: { password_hash, password_changed_at: new Date() },
+    });
+
+    return res.count === 1;
+  }
+
   updateById(id_utilisateur: string, data: Prisma.utilisateursUpdateInput): Promise<UtilisateurPublic> {
     return this.prisma.utilisateurs.update({ where: { id_utilisateur }, data, select: utilisateurPublicSelect, });
   }

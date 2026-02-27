@@ -1,5 +1,5 @@
 import * as bcrypt from 'bcrypt'
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { ForbiddenException, Injectable, UnauthorizedException } from "@nestjs/common";
 import { UtilisateurRepository } from 'src/utilisateurs/utilisateurs.repository';
 import { JwtService } from '@nestjs/jwt';
 
@@ -33,6 +33,20 @@ export class AuthService {
       sub: user.id_utilisateur,
     });
 
+    return { access_token };
+  }
+
+  async changePasswordFirstLogin(userId: string, newPassword: string) {
+    const password_hash = await bcrypt.hash(newPassword, 10);
+
+    // UPDATE CONDITIONNEL pour first login
+    const update = await this.repo.setPasswordFirstLogin(userId, password_hash);
+
+    if (!update) {
+      throw new ForbiddenException('Mot de passe déjà changé ou compte invalide');
+    }
+
+    const access_token = await this.jwt.signAsync({ sub: userId });
     return { access_token };
   }
 }

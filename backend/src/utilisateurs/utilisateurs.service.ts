@@ -18,7 +18,6 @@ export class UtilisateursService {
       prenom: dto.prenom,
       email: dto.email,
       password_hash,
-      password_changed_at: new Date(),
       equipes: {
         connect: { id_equipe: dto.id_equipe },
       },
