@@ -49,4 +49,8 @@ export class AuthService {
     const access_token = await this.jwt.signAsync({ sub: userId });
     return { access_token };
   }
+
+  async me(userId: string) {
+    return this.repo.findById(userId);
+  }
 }

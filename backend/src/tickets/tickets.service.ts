@@ -1,14 +1,43 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
 import { TicketRepository } from './tickets.repository';
 import { Prisma } from '@prisma/client';
+import { AccessService } from 'src/access/access.service';
 
 @Injectable()
 export class TicketsService {
-  constructor(private readonly repo: TicketRepository) { }
+  constructor(
+    private readonly repo: TicketRepository,
+    private readonly access: AccessService,
+  ) { }
 
-  create(dto: CreateTicketDto) {
+  async createForUser(userId: string, dto: CreateTicketDto) {
+    const ctx = await this.access.getUserContext(userId);
+
+    // Le créateur vient du JWT.
+    if (dto.id_createur && dto.id_createur !== userId) {
+      throw new ForbiddenException("id_createur ne peut pas être un autre utilisateur");
+    }
+
+    // En v1 (README): création User+ mais sans assignation/résultat par un User.
+    if (!this.access.hasAtLeast(ctx, 'agent')) {
+      if (dto.etat !== 'nouveau') {
+        throw new ForbiddenException("Un User ne peut créer qu'avec etat=nouveau");
+      }
+      if (dto.resultat !== undefined) {
+        throw new ForbiddenException('Un User ne peut pas définir resultat à la création');
+      }
+      if (dto.id_agent_assigne !== undefined) {
+        throw new ForbiddenException("Un User ne peut pas assigner un ticket à la création");
+      }
+    } else if (!this.access.hasAtLeast(ctx, 'manager')) {
+      // Agent+: pas d'assignation (Manager+) sauf si tu ajoutes une action métier dédiée (claim).
+      if (dto.id_agent_assigne !== undefined) {
+        throw new ForbiddenException('Assignation/désassignation réservée à Manager+');
+      }
+    }
+
     const data: Prisma.ticketsCreateInput = {
       id_ticket: dto.id_ticket,
       titre: dto.titre,
@@ -19,7 +48,7 @@ export class TicketsService {
         connect: { id_categorie: dto.id_categorie },
       },
       utilisateurs_tickets_id_createurToutilisateurs: {
-        connect: { id_utilisateur: dto.id_createur },
+        connect: { id_utilisateur: userId },
       },
     };
     if (dto.id_agent_assigne !== undefined && dto.id_agent_assigne !== null) {
@@ -31,17 +60,63 @@ export class TicketsService {
     return this.repo.create(data);
   }
 
-  findAll() {
-    return this.repo.findAll();
+  async findAllForUser(userId: string) {
+    const ctx = await this.access.getUserContext(userId);
+    return this.repo.findMany({ where: this.access.ticketWhereFor(ctx) });
   }
 
-  async findOne(id_ticket: string) {
+  async findOneForUser(userId: string, id_ticket: string) {
+    const ctx = await this.access.getUserContext(userId);
+    await this.access.assertCanReadTicket(ctx, id_ticket);
+
     const ticket = await this.repo.findById(id_ticket);
     if (!ticket) throw new NotFoundException('Ticket non trouvé');
     return ticket;
   }
 
-  async update(id_ticket: string, dto: UpdateTicketDto) {
+  async updateForUser(userId: string, id_ticket: string, dto: UpdateTicketDto) {
+    const ctx = await this.access.getUserContext(userId);
+
+    const ticketAccess = await this.access.getTicketForAccess(id_ticket);
+    if (!ticketAccess) throw new NotFoundException('Ticket non trouvé');
+    const okRead = await this.access.canReadTicketFromLoaded(ctx, ticketAccess);
+    if (!okRead) throw new ForbiddenException('Accès interdit au ticket');
+
+    // Règles PATCH (README v1)
+    const touches = {
+      titre: dto.titre !== undefined,
+      etat: dto.etat !== undefined,
+      resultat: dto.resultat !== undefined,
+      archived_at: dto.archived_at !== undefined,
+      id_categorie: dto.id_categorie !== undefined,
+      id_createur: dto.id_createur !== undefined,
+      id_agent_assigne: dto.id_agent_assigne !== undefined,
+    };
+
+    if (!this.access.hasAtLeast(ctx, 'agent')) {
+      // User: aucune modif sauf fermeture (etat=ferme) sous conditions.
+      const anyOther = touches.titre || touches.resultat || touches.archived_at || touches.id_categorie || touches.id_createur || touches.id_agent_assigne;
+      if (anyOther) throw new ForbiddenException('Un User ne peut pas modifier un ticket (hors fermeture)');
+      if (!touches.etat || dto.etat !== 'ferme') {
+        throw new ForbiddenException('Un User ne peut que fermer un ticket (etat=ferme)');
+      }
+      const allowedPrev = new Set(['nouveau', 'en_attente', 'en_cours']);
+      if (!allowedPrev.has(ticketAccess.etat)) {
+        throw new ForbiddenException('Fermeture interdite dans cet état');
+      }
+    } else {
+      // Agent+: changement d'état/résultat OK
+      if (touches.id_agent_assigne && !this.access.hasAtLeast(ctx, 'manager')) {
+        throw new ForbiddenException('Assignation/désassignation réservée à Manager+');
+      }
+      if ((touches.id_categorie || touches.titre) && !this.access.hasAtLeast(ctx, 'manager')) {
+        throw new ForbiddenException('Modification titre/catégorie réservée à Manager+');
+      }
+      if (touches.id_createur && !this.access.hasAtLeast(ctx, 'admin')) {
+        throw new ForbiddenException('Changement de créateur réservé à Admin');
+      }
+    }
+
     try {
       const data: Prisma.ticketsUpdateInput = {};
 
@@ -82,7 +157,10 @@ export class TicketsService {
     }
   }
 
-  async remove(id_ticket: string) {
+  async removeForUser(userId: string, id_ticket: string) {
+    const ctx = await this.access.getUserContext(userId);
+    if (!this.access.isAdmin(ctx)) throw new ForbiddenException('Suppression réservée à Admin');
+
     try {
       return await this.repo.deleteById(id_ticket);
     } catch (err) {

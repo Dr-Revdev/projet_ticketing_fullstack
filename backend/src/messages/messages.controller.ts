@@ -1,6 +1,9 @@
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { MessagesService } from './messages.service';
 import { CreateMessageDto } from './dto/create-message.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { Roles } from 'src/auth/roles.decorator';
+import { Request } from 'express';
 // import { UpdateMessageDto } from './dto/update-message.dto';
 
 @Controller('messages')
@@ -8,26 +11,32 @@ export class MessagesController {
   constructor(private readonly messagesService: MessagesService) { }
 
   @Post()
-  create(@Body() createMessageDto: CreateMessageDto) {
-    return this.messagesService.create(createMessageDto);
+  @UseGuards(JwtAuthGuard)
+  create(
+    @Req() req: Request & { user: { userId: string } },
+    @Body() createMessageDto: CreateMessageDto,
+  ) {
+    return this.messagesService.createForUser(req.user.userId, createMessageDto);
   }
 
   @Get()
-  findAll() {
-    return this.messagesService.findAll();
+  @UseGuards(JwtAuthGuard)
+  findAll(@Req() req: Request & { user: { userId: string } }) {
+    return this.messagesService.findAllForUser(req.user.userId);
   }
 
   @Get(':id')
-  findOne(@Param('id') id_message: string) {
-    return this.messagesService.findOne(id_message);
+  @UseGuards(JwtAuthGuard)
+  findOne(
+    @Req() req: Request & { user: { userId: string } },
+    @Param('id') id_message: string,
+  ) {
+    return this.messagesService.findOneForUser(req.user.userId, id_message);
   }
 
-  /*  @Patch(':id')
-  update(@Param('id') id_message: string, @Body() updateMessageDto: UpdateMessageDto) {
-    return this.messagesService.update(id_message, updateMessageDto);
-  }
-*/
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  @Roles('admin')
   remove(@Param('id') id_message: string) {
     return this.messagesService.remove(id_message);
   }

@@ -14,8 +14,20 @@ export class PieceJointeRepository {
     return this.prisma.piecejointes.findMany();
   }
 
+  findMany<T extends Prisma.piecejointesFindManyArgs>(
+    args: Prisma.SelectSubset<T, Prisma.piecejointesFindManyArgs>,
+  ) {
+    return this.prisma.piecejointes.findMany(args);
+  }
+
   findById(id_piece_jointe: string): Promise<PieceJointeModel | null> {
     return this.prisma.piecejointes.findUnique({ where: { id_piece_jointe } });
+  }
+
+  findByIdWith<T extends Prisma.piecejointesFindUniqueArgs>(
+    args: Prisma.SelectSubset<T, Prisma.piecejointesFindUniqueArgs>,
+  ) {
+    return this.prisma.piecejointes.findUnique(args);
   }
 
   updateById(

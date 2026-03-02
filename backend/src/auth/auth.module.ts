@@ -8,11 +8,14 @@ import { UtilisateursModule } from '../utilisateurs/utilisateurs.module';
 import type { StringValue } from 'ms';
 import { JwtStrategy } from './jwt.strategy';
 import { JwtResetStrategy } from './jwt-reset.strategy';
+import { UtilisateursRolesModule } from 'src/utilisateurs-roles/utilisateurs-roles.module';
+import { RolesGuard } from './roles.guard';
 
 @Module({
   imports: [
     UtilisateursModule,
     PassportModule,
+    UtilisateursRolesModule,
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
@@ -28,6 +31,6 @@ import { JwtResetStrategy } from './jwt-reset.strategy';
     })
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, JwtResetStrategy],
+  providers: [AuthService, JwtStrategy, JwtResetStrategy, RolesGuard],
 })
 export class AuthModule {}
