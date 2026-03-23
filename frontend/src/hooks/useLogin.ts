@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom'
 import { login } from "../services/LoginService";
+import { useAuth } from '../contexts/AuthContext'
 
 export function useLogin() {
     const [error, setError] = useState<string | null>(null)
     const navigate = useNavigate()
+    const { login: authLogin } = useAuth()
 
     const handleLogin = async (email: string, password: string) => {
         setError(null)
@@ -18,7 +20,7 @@ export function useLogin() {
                 navigate('/change-password')
             } else {
                 // Stockege du tocken d'accès, puis redirection vers l'accueil
-                localStorage.setItem('access_token', result.access_token)
+                await authLogin(result.access_token)
                 navigate('/')
             }
         } catch (err) {
