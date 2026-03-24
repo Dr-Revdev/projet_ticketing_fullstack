@@ -5,10 +5,6 @@ export const MESSAGE_VISIBILITE = ['public', 'interne'] as const;
 export class CreateMessageDto {
     @IsString()
     @IsNotEmpty()
-    id_message: string;
-
-    @IsString()
-    @IsNotEmpty()
     contenu: string;
 
     @IsString()

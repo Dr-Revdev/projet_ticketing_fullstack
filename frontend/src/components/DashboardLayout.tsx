@@ -5,8 +5,9 @@ import { useAuth } from '../contexts/AuthContext'
 const DRAWER_WIDTH = 240
 
 const menuItems = [
-    { label: 'Dashbord', path: '/dashboard' },
+    { label: 'Dashboard', path: '/dashboard' },
     { label: 'Tickets', path: '/tickets'},
+    { label: 'Nouveau ticket', path: '/tickets/new' },
 ]
 
 export default function DashboardLayout() {
@@ -14,7 +15,7 @@ export default function DashboardLayout() {
     const navigate = useNavigate()
     const location = useLocation()
 
-    const hangleLogout = () => {
+    const handleLogout = () => {
         logout()
         navigate('/login')
     }
@@ -53,7 +54,7 @@ export default function DashboardLayout() {
                             <Typography variant='body2'>
                                 {user?.prenom} {user?.nom}
                             </Typography>
-                            <Button color='inherit' onClick={hangleLogout}>
+                            <Button color='inherit' onClick={handleLogout}>
                                 Déconnexion
                             </Button>
                         </Box>

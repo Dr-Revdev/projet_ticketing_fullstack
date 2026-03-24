@@ -18,10 +18,6 @@ export const TICKET_ETATS = [
 export class CreateTicketDto {
   @IsString()
   @IsNotEmpty()
-  id_ticket: string;
-
-  @IsString()
-  @IsNotEmpty()
   titre: string;
 
   @IsString()

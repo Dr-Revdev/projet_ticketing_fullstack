@@ -5,6 +5,9 @@ import { AuthProvider } from './contexts/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import DashboardPage from './pages/DashboardPage'
 import DashboardLayout from './components/DashboardLayout'
+import TicketsPage from './pages/TicketsPage'
+import CreateTicketPage from './pages/CreationTicketPage'
+import TicketDetailPage from './pages/TicketDetailPage'
 
 function App() {
 
@@ -16,6 +19,9 @@ function App() {
 
           <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
             <Route path='/dashboard' element={<DashboardPage />} />
+            <Route path='/tickets' element={<TicketsPage />} />
+            <Route path='/tickets/new' element={<CreateTicketPage />} />
+            <Route path='/tickets/:id' element={<TicketDetailPage />} />
           </Route>
 
           <Route path='*' element={<Navigate to='/dashboard' replace />} />

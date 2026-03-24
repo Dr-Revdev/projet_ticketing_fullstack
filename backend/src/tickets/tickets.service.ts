@@ -4,6 +4,7 @@ import { UpdateTicketDto } from './dto/update-ticket.dto';
 import { TicketRepository } from './tickets.repository';
 import { Prisma } from '@prisma/client';
 import { AccessService } from 'src/access/access.service';
+import { randomUUID } from 'node:crypto';
 
 @Injectable()
 export class TicketsService {
@@ -39,7 +40,7 @@ export class TicketsService {
     }
 
     const data: Prisma.ticketsCreateInput = {
-      id_ticket: dto.id_ticket,
+      id_ticket: randomUUID(),
       titre: dto.titre,
       etat: dto.etat,
       resultat: dto.resultat,

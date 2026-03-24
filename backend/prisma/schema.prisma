@@ -7,9 +7,9 @@ datasource db {
 }
 
 model categories {
-  id_categorie String    @id @db.VarChar(25)
+  id_categorie String    @id @db.VarChar(36)
   libelle      String    @db.VarChar(50)
-  id_equipe    String    @db.VarChar(25)
+  id_equipe    String    @db.VarChar(36)
   equipes      equipes   @relation(fields: [id_equipe], references: [id_equipe], map: "fk_categories_equipe")
   tickets      tickets[]
 
@@ -17,20 +17,20 @@ model categories {
 }
 
 model equipes {
-  id_equipe    String         @id @db.VarChar(25)
+  id_equipe    String         @id @db.VarChar(36)
   nom          String         @unique(map: "nom") @db.VarChar(50)
   categories   categories[]
   utilisateurs utilisateurs[]
 }
 
 model historiqueactions {
-  id_action                                              String       @id @db.VarChar(25)
+  id_action                                              String       @id @db.VarChar(36)
   type_action                                            String       @db.VarChar(50)
   date_action                                            DateTime     @default(now()) @db.DateTime(0)
   detail                                                 String?      @db.VarChar(1000)
-  id_cible                                               String       @db.VarChar(25)
-  id_auteur                                              String       @db.VarChar(25)
-  id_ticket                                              String       @db.VarChar(25)
+  id_cible                                               String       @db.VarChar(36)
+  id_auteur                                              String       @db.VarChar(36)
+  id_ticket                                              String       @db.VarChar(36)
   utilisateurs_historiqueactions_id_auteurToutilisateurs utilisateurs @relation("historiqueactions_id_auteurToutilisateurs", fields: [id_auteur], references: [id_utilisateur], map: "fk_actions_auteur_utilisateur")
   utilisateurs_historiqueactions_id_cibleToutilisateurs  utilisateurs @relation("historiqueactions_id_cibleToutilisateurs", fields: [id_cible], references: [id_utilisateur], map: "fk_actions_cible_utilisateur")
   tickets                                                tickets      @relation(fields: [id_ticket], references: [id_ticket], onDelete: Cascade, map: "fk_actions_ticket")
@@ -42,12 +42,12 @@ model historiqueactions {
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model messages {
-  id_message     String       @id @db.VarChar(25)
+  id_message     String       @id @db.VarChar(36)
   contenu        String       @db.VarChar(4000)
   date_message   DateTime     @default(now()) @db.DateTime(0)
   visibilite     String       @db.VarChar(25)
-  id_utilisateur String       @db.VarChar(25)
-  id_ticket      String       @db.VarChar(25)
+  id_utilisateur String       @db.VarChar(36)
+  id_ticket      String       @db.VarChar(36)
   tickets        tickets      @relation(fields: [id_ticket], references: [id_ticket], onDelete: Cascade, map: "fk_messages_ticket")
   utilisateurs   utilisateurs @relation(fields: [id_utilisateur], references: [id_utilisateur], map: "fk_messages_utilisateur")
 
@@ -57,12 +57,12 @@ model messages {
 }
 
 model piecejointes {
-  id_piece_jointe String       @id @db.VarChar(25)
+  id_piece_jointe String       @id @db.VarChar(36)
   nom_fichier     String       @db.VarChar(255)
   url_path        String       @db.VarChar(255)
   date_upload     DateTime     @default(now()) @db.DateTime(0)
-  id_utilisateur  String       @db.VarChar(25)
-  id_ticket       String       @db.VarChar(25)
+  id_utilisateur  String       @db.VarChar(36)
+  id_ticket       String       @db.VarChar(36)
   tickets         tickets      @relation(fields: [id_ticket], references: [id_ticket], onDelete: Cascade, map: "fk_pieces_ticket")
   utilisateurs    utilisateurs @relation(fields: [id_utilisateur], references: [id_utilisateur], map: "fk_pieces_utilisateur")
 
@@ -71,22 +71,22 @@ model piecejointes {
 }
 
 model roles {
-  id_role            String               @id @db.VarChar(25)
+  id_role            String               @id @db.VarChar(36)
   libelle            String               @unique(map: "libelle") @db.VarChar(50)
   utilisateurs_roles utilisateurs_roles[]
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model tickets {
-  id_ticket                                           String              @id @db.VarChar(25)
+  id_ticket                                           String              @id @db.VarChar(36)
   titre                                               String              @db.VarChar(50)
   date_creation                                       DateTime            @default(now()) @db.DateTime(0)
   resultat                                            String?             @db.VarChar(25)
   etat                                                String              @db.VarChar(25)
   archived_at                                         DateTime?           @db.DateTime(0)
-  id_createur                                         String              @db.VarChar(25)
-  id_categorie                                        String              @db.VarChar(25)
-  id_agent_assigne                                    String?             @db.VarChar(25)
+  id_createur                                         String              @db.VarChar(36)
+  id_categorie                                        String              @db.VarChar(36)
+  id_agent_assigne                                    String?             @db.VarChar(36)
   historiqueactions                                   historiqueactions[]
   messages                                            messages[]
   piecejointes                                        piecejointes[]
@@ -102,11 +102,11 @@ model tickets {
 }
 
 model utilisateurs {
-  id_utilisateur                                              String               @id @db.VarChar(25)
+  id_utilisateur                                              String               @id @db.VarChar(36)
   nom                                                         String               @db.VarChar(50)
   prenom                                                      String               @db.VarChar(50)
-  email                                                       String               @unique(map: "email") @db.VarChar(255)
-  id_equipe                                                   String               @db.VarChar(25)
+  email                                                       String               @unique(map: "email") @db.VarChar(191)
+  id_equipe                                                   String               @db.VarChar(36)
   password_hash                                               String               @db.VarChar(255)
   derniere_connexion                                          DateTime?            @db.DateTime(0)
   password_changed_at                                         DateTime?            @db.DateTime(0)
@@ -123,8 +123,8 @@ model utilisateurs {
 }
 
 model utilisateurs_roles {
-  id_utilisateur String       @db.VarChar(25)
-  id_role        String       @db.VarChar(25)
+  id_utilisateur String       @db.VarChar(36)
+  id_role        String       @db.VarChar(36)
   roles          roles        @relation(fields: [id_role], references: [id_role], onDelete: Cascade, map: "fk_ur_role")
   utilisateurs   utilisateurs @relation(fields: [id_utilisateur], references: [id_utilisateur], onDelete: Cascade, map: "fk_ur_utilisateur")
 

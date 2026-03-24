@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, UseGuards, Req, Query } from '@nestjs/common';
 import { MessagesService } from './messages.service';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -21,8 +21,11 @@ export class MessagesController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  findAll(@Req() req: Request & { user: { userId: string } }) {
-    return this.messagesService.findAllForUser(req.user.userId);
+  findAll(
+    @Req() req: Request & { user: { userId: string } },
+    @Query('id_ticket') id_ticket?: string,
+  ) {
+    return this.messagesService.findAllForUser(req.user.userId, id_ticket);
   }
 
   @Get(':id')

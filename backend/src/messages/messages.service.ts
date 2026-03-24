@@ -4,6 +4,7 @@ import { CreateMessageDto } from './dto/create-message.dto';
 import { MessageRepository } from './message.repository';
 import { Prisma } from '@prisma/client';
 import { AccessService } from 'src/access/access.service';
+import { randomUUID } from 'node:crypto';
 
 @Injectable()
 export class MessagesService {
@@ -26,7 +27,7 @@ export class MessagesService {
     }
 
     const data: Prisma.messagesCreateInput = {
-      id_message: dto.id_message,
+      id_message: randomUUID(),
       contenu: dto.contenu,
       visibilite: dto.visibilite,
       utilisateurs: {
@@ -37,20 +38,41 @@ export class MessagesService {
       },
     };
 
-    return this.repo.create(data);
+    const message = await this.repo.create(data);
+    return this.repo.findByIdWith({
+      where: { id_message: message.id_message },
+      include: {
+        utilisateurs: {
+          select: { id_utilisateur: true, nom: true, prenom: true }
+        }
+      }
+    });
   }
 
-  async findAllForUser(userId: string) {
+  async findAllForUser(userId: string, id_ticket?: string) {
     const ctx = await this.access.getUserContext(userId);
 
     const where: Prisma.messagesWhereInput = {
       tickets: this.access.ticketWhereFor(ctx),
     };
+
+    if (id_ticket) {
+      where.id_ticket = id_ticket;
+    }
+
     if (!this.access.canSeeInternalMessages(ctx)) {
       where.visibilite = 'public';
     }
 
-    return this.repo.findMany({ where });
+    return this.repo.findMany({ 
+      where,
+      include: {
+        utilisateurs: {
+          select: { id_utilisateur: true, nom: true, prenom: true }
+        }
+      },
+      orderBy: { date_message: 'asc' }
+    });
   }
 
   async findOneForUser(userId: string, id_message: string) {
@@ -78,20 +100,6 @@ export class MessagesService {
     return message;
   }
 
-  // Pas d'update. Non nécessaire pour le moment.
-  // Pas bon de toutes façons
-
-  /*  async update(id_message: string, dto: UpdateMessageDto) {
-    try {
-      return await this.repo.updateById(id_message, dto);
-    } catch (err) {
-      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
-        throw new NotFoundException('Message non trouvé')
-      }
-      throw err;
-    }
-  }
-*/
   async remove(id_message: string) {
     try {
       return await this.repo.deleteById(id_message);
