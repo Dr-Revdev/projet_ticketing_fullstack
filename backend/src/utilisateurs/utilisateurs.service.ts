@@ -4,6 +4,7 @@ import { UpdateUtilisateurDto } from './dto/update-utilisateur.dto';
 import { UtilisateurRepository } from './utilisateurs.repository';
 import { Prisma } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import { randomUUID } from 'node:crypto';
 
 @Injectable()
 export class UtilisateursService {
@@ -13,7 +14,7 @@ export class UtilisateursService {
     const password_hash = await bcrypt.hash(dto.password, 10)
 
     const data: Prisma.utilisateursCreateInput = {
-      id_utilisateur: dto.id_utilisateur,
+      id_utilisateur: randomUUID(),
       nom: dto.nom,
       prenom: dto.prenom,
       email: dto.email,

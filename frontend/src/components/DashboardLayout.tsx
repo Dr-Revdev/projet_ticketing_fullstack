@@ -8,6 +8,7 @@ const menuItems = [
     { label: 'Dashboard', path: '/dashboard' },
     { label: 'Tickets', path: '/tickets'},
     { label: 'Nouveau ticket', path: '/tickets/new' },
+    { label: 'Utilisateurs', path: '/utilisateurs' },
 ]
 
 export default function DashboardLayout() {

@@ -9,6 +9,9 @@ const utilisateurPublicSelect = {
   email: true,
   id_equipe: true,
   derniere_connexion: true,
+  utilisateurs_roles: {
+    select: { roles: { select: { id_role: true, libelle: true } } }
+  },
 } satisfies Prisma.utilisateursSelect;
 
 type UtilisateurPublic = Prisma.utilisateursGetPayload<{

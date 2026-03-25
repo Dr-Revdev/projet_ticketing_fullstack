@@ -89,3 +89,22 @@ export async function createTicket(ticket: {
 
     return reponse.json()
 }
+
+export async function updateTicket(id: string, data: Partial<Ticket>): Promise<Ticket> {
+    const token = localStorage.getItem('access_token')
+
+    const reponse = await fetch(`${API_URL}/tickets/${id}`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+    })
+
+    if (!reponse.ok) {
+        const err = await reponse.json()
+        throw new Error(err.message ?? 'Impossible de modifier le ticket')
+    }
+    return reponse.json()
+}

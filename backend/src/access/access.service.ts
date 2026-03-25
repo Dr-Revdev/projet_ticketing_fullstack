@@ -56,10 +56,10 @@ export class AccessService {
   async getUserRoleIds(userId: string): Promise<string[]> {
     const links = await this.prisma.utilisateurs_roles.findMany({
       where: { id_utilisateur: userId },
-      select: { id_role: true },
+      select: { roles: {select: { libelle: true} } },
     });
 
-    return links.map((x) => x.id_role);
+    return links.map((x) => x.roles.libelle);
   }
 
   hasAtLeast(ctx: UserAccessContext, minRole: CanonicalRole): boolean {
@@ -70,13 +70,6 @@ export class AccessService {
     return this.hasAtLeast(ctx, 'admin');
   }
 
-  /**
-   * Filtre Prisma qui matérialise le scope README:
-   * - admin: tous
-   * - manager: tickets de son équipe (via catégorie)
-   * - agent: tickets de son équipe non assignés + tickets assignés à lui
-   * - user: ses tickets (créateur)
-   */
   ticketWhereFor(ctx: UserAccessContext): Prisma.ticketsWhereInput {
     if (this.hasAtLeast(ctx, 'admin')) return {};
 

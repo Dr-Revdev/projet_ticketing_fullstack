@@ -22,3 +22,21 @@ export async function fetchMe(token: string): Promise<UserProfile> {
 
     return reponse.json()
 }
+
+export async function changePassword(resetToken: string, newPassword: string): Promise<{ access_token: string }> {
+    const reponse = await fetch(`${API_URL}/auth/change-password`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${resetToken}`, 
+        },
+        body: JSON.stringify({ newPassword }),
+    })
+
+    if (!reponse.ok) {
+        const err = await reponse.json()
+        throw new Error(err.message ?? 'Erreur lors du chargement de mot de passe')
+    }
+    
+    return reponse.json()
+}

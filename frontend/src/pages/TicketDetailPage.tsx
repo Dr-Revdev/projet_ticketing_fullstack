@@ -1,4 +1,4 @@
-import { Box, Typography, Chip, Paper, CircularProgress, Alert, TextField, Button } from '@mui/material'
+import { Box, Typography, Chip, Paper, CircularProgress, Alert, TextField, Button, MenuItem } from '@mui/material'
 import useTicketDetail from '../hooks/useTicketDetail'
 import useTicketMessages from '../hooks/useTicketMessages'
 
@@ -10,8 +10,10 @@ const etatColors: Record<string, 'default' | 'info' | 'warning' | 'success' | 'e
     ferme: 'error',
 }
 
+const etats = [ 'nouveau', 'en_cours', 'en_attente', 'resolu', 'ferme' ]
+
 export default function TicketDetailPage() {
-    const { ticket, loading, error } = useTicketDetail()
+    const { ticket, utilisateurs, loading, error, handleUpdate } = useTicketDetail()
     const { messages, contenu, setContenu, error: msgError, handleSend } = useTicketMessages(ticket?.id_ticket)
 
     if (loading) return <CircularProgress />
@@ -28,15 +30,52 @@ export default function TicketDetailPage() {
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                     <Box>
                         <Typography variant='subtitle2' color='text.secondary'>État</Typography>
-                        <Chip
-                            label={ticket.etat}
-                            color={etatColors[ticket.etat] ?? 'default'}
+                        <TextField
+                            value={ticket.etat}
+                            onChange={e => handleUpdate({ etat: e.target.value })}
+                            select
                             size='small'
-                        />
+                            sx={{ minWidth: 200 }}
+                        >
+                            {etats.map(etat => (
+                                <MenuItem key={etat} value={etat}>
+                                    <Chip
+                                        label={etat}
+                                        color={etatColors[etat] ?? 'default'}
+                                        size='small'
+                                    />
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                    </Box>
+
+                    <Box>
+                        <Typography variant='subtitle2' color='text.secondary'>Agent assigné</Typography>
+                        <TextField
+                            value={ticket.id_agent_assigne ?? ''}
+                            onChange={e => handleUpdate({ id_agent_assigne: e.target.value || null })}
+                            select
+                            size='small'
+                            sx={{ minWidth: 200 }}
+                        >
+                            <MenuItem value=''>
+                                Non assigné
+                            </MenuItem>
+                            {utilisateurs.map(u => (
+                                <MenuItem key={u.id_utilisateur} value={u.id_utilisateur}>
+                                    {u.prenom} {u.nom}
+                                </MenuItem>
+                            ))}
+                        </TextField>
                     </Box>
 
                     <Box>
                         <Typography variant='subtitle2' color='text.secondary'>Date de création</Typography>
+                        <Typography>{new Date(ticket.date_creation).toLocaleDateString('fr-FR')}</Typography>
+                    </Box>
+
+                    <Box>
+                        <Typography variant='subtitle2' color='text.secondary'>Catégorie</Typography>
                         <Typography>{ticket.id_categorie}</Typography>
                     </Box>
 

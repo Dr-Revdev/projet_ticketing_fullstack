@@ -1,10 +1,6 @@
-import { IsDate, IsEmail, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
 
 export class CreateUtilisateurDto {
-    @IsString()
-    @IsNotEmpty()
-    id_utilisateur: string;
-
     @IsString()
     @IsNotEmpty()
     nom: string;
