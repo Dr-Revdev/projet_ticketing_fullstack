@@ -1,20 +1,23 @@
 import { Box, Drawer, List, ListItemButton, ListItemText, AppBar, Toolbar, Typography, Button } from '@mui/material'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { hasAtLeast } from '../utils/roles'
 
 const DRAWER_WIDTH = 240
 
-const menuItems = [
-    { label: 'Dashboard', path: '/dashboard' },
-    { label: 'Tickets', path: '/tickets'},
-    { label: 'Nouveau ticket', path: '/tickets/new' },
-    { label: 'Utilisateurs', path: '/utilisateurs' },
-]
 
 export default function DashboardLayout() {
     const { user, logout } = useAuth()
     const navigate = useNavigate()
     const location = useLocation()
+    const menuItems = [
+    { label: 'Dashboard', path: '/dashboard' },
+    { label: 'Tickets', path: '/tickets' },
+    { label: 'Nouveau ticket', path: '/tickets/new' },
+    ...(user && hasAtLeast(user.utilisateurs_roles, 'admin')
+        ? [{ label: 'Utilisateurs', path: '/utilisateurs' }]
+        : []),
+]
 
     const handleLogout = () => {
         logout()

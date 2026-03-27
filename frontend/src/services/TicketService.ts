@@ -12,6 +12,7 @@ export type Ticket = {
     id_categorie: string
     id_agent_assigne: string | null
     achived_at: string | null
+    categories: { libelle: string }
 }
 
 // Type pour les catégorie

@@ -8,6 +8,12 @@ export type UserProfile = {
     prenom: string
     email: string
     id_equipe: string
+    utilisateurs_roles: {
+        roles: {
+            id_role: string
+            libelle: string
+        }
+    }[]
 }
 
 // Fonction d'appel de l'API (retourne un JSON)

@@ -12,6 +12,9 @@ const utilisateurPublicSelect = {
   utilisateurs_roles: {
     select: { roles: { select: { id_role: true, libelle: true } } }
   },
+  equipes: {
+    select: { nom: true }
+  },
 } satisfies Prisma.utilisateursSelect;
 
 type UtilisateurPublic = Prisma.utilisateursGetPayload<{

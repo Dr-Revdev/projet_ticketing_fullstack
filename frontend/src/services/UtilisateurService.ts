@@ -9,6 +9,7 @@ export type Utilisateur = {
     email: string
     id_equipe: string
     utilisateurs_roles: { roles: { id_role: string, libelle: string } }[]
+    equipes: { nom: string }
 }
 
 export async function fetchUtilisateurs(): Promise<Utilisateur[]> {

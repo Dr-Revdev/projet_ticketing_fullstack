@@ -26,7 +26,7 @@ export default function UtilisateursPage() {
                     <TextField label='Prénom' value={prenom} onChange={e => setPrenom(e.target.value)} required size='small' />
                     <TextField label='Email' value={email} onChange={e => setEmail(e.target.value)} required type='email' size='small' />
                     <TextField label='Mot de passe' value={password} onChange={e => setPassword(e.target.value)} required type='password' size='small' />
-                    <TextField label='Équipe' value={idEquipe} onChange={e => setIdEquipe(e.target.value)} required size='small' sx={{ minWidth: 150 }}>
+                    <TextField label='Équipe' value={idEquipe} onChange={e => setIdEquipe(e.target.value)} select required size='small' sx={{ minWidth: 150 }}>
                         {equipes.map(eq => (
                             <MenuItem key={eq.id_equipe} value={eq.id_equipe}>{eq.nom}</MenuItem>
                         ))}
@@ -59,7 +59,7 @@ export default function UtilisateursPage() {
                                 <TableCell>{u.nom}</TableCell>
                                 <TableCell>{u.prenom}</TableCell>
                                 <TableCell>{u.email}</TableCell>
-                                <TableCell>{u.id_equipe}</TableCell>
+                                <TableCell>{u.equipes.nom}</TableCell>
                                 <TableCell>
                                     {u.utilisateurs_roles.map(ur => ur.roles.libelle).join(', ')}
                                 </TableCell>

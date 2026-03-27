@@ -51,7 +51,7 @@ export default function useUtilisateurs() {
             await deleteUtilisateur(id)
             setUtilisateurs(prev => prev.filter(u => u.id_utilisateur !== id))
         } catch (err: any) {
-            setError(err.massage)
+            setError(err.message)
         }
     }
 

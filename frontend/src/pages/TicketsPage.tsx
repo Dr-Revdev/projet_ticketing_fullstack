@@ -57,7 +57,7 @@ export default function TicketsPage() {
                                 <TableCell>
                                     {new Date(ticket.date_creation).toLocaleDateString('fr-FR')}
                                 </TableCell>
-                                <TableCell>{ticket.id_categorie}</TableCell>
+                                <TableCell>{ticket.categories.libelle}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

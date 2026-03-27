@@ -4,9 +4,15 @@ import { fetchTicket, updateTicket } from "../services/TicketService"
 import { fetchUtilisateurs } from '../services/UtilisateurService'
 import type { Utilisateur } from '../services/UtilisateurService'
 import type { Ticket } from "../services/TicketService";
+import { useAuth } from '../contexts/AuthContext'
+import { hasAtLeast } from '../utils/roles'
 
 export default function useTicketDetail() {
     const { id } = useParams<{ id: string }>()
+
+    const { user } = useAuth()
+    const isAgent = !!user && hasAtLeast(user.utilisateurs_roles, 'agent')
+    const isManager = !!user && hasAtLeast(user.utilisateurs_roles, 'mannager')
 
     const [ticket, setTicket] = useState<Ticket | null>(null)
     const [utilisateurs, setUtilisateurs] = useState<Utilisateur[]>([])
@@ -40,5 +46,5 @@ export default function useTicketDetail() {
         }
     }
 
-    return { ticket, utilisateurs, loading, error, handleUpdate }
+    return { ticket, utilisateurs, loading, error, handleUpdate, isAgent, isManager }
 }

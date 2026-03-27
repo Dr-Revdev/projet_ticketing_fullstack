@@ -13,7 +13,7 @@ const etatColors: Record<string, 'default' | 'info' | 'warning' | 'success' | 'e
 const etats = [ 'nouveau', 'en_cours', 'en_attente', 'resolu', 'ferme' ]
 
 export default function TicketDetailPage() {
-    const { ticket, utilisateurs, loading, error, handleUpdate } = useTicketDetail()
+    const { ticket, utilisateurs, loading, error, handleUpdate, isAgent, isManager } = useTicketDetail()
     const { messages, contenu, setContenu, error: msgError, handleSend } = useTicketMessages(ticket?.id_ticket)
 
     if (loading) return <CircularProgress />
@@ -36,6 +36,7 @@ export default function TicketDetailPage() {
                             select
                             size='small'
                             sx={{ minWidth: 200 }}
+                            disabled={!isAgent}
                         >
                             {etats.map(etat => (
                                 <MenuItem key={etat} value={etat}>
@@ -57,6 +58,7 @@ export default function TicketDetailPage() {
                             select
                             size='small'
                             sx={{ minWidth: 200 }}
+                            disabled={!isManager}
                         >
                             <MenuItem value=''>
                                 Non assigné
@@ -76,7 +78,7 @@ export default function TicketDetailPage() {
 
                     <Box>
                         <Typography variant='subtitle2' color='text.secondary'>Catégorie</Typography>
-                        <Typography>{ticket.id_categorie}</Typography>
+                        <Typography>{ticket.categories.libelle}</Typography>
                     </Box>
 
                     <Box>

@@ -63,14 +63,20 @@ export class TicketsService {
 
   async findAllForUser(userId: string) {
     const ctx = await this.access.getUserContext(userId);
-    return this.repo.findMany({ where: this.access.ticketWhereFor(ctx) });
+    return this.repo.findMany({ 
+      where: this.access.ticketWhereFor(ctx),
+      include: { categories: { select: { libelle: true } } }
+    });
   }
 
   async findOneForUser(userId: string, id_ticket: string) {
     const ctx = await this.access.getUserContext(userId);
     await this.access.assertCanReadTicket(ctx, id_ticket);
 
-    const ticket = await this.repo.findById(id_ticket);
+    const ticket = await this.repo.findByIdWith({
+      where: {id_ticket},
+      include: { categories: { select: { libelle: true } } }
+    });
     if (!ticket) throw new NotFoundException('Ticket non trouvé');
     return ticket;
   }
