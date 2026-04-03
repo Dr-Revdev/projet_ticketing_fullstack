@@ -40,6 +40,12 @@ export class PieceJointesService {
     return this.repo.findMany({ where: { tickets: this.access.ticketWhereFor(ctx) } });
   }
 
+  async findAllForTicket(userId: string, id_ticket: string) {
+    const ctx = await this.access.getUserContext(userId);
+    await this.access.assertCanReadTicket(ctx, id_ticket);
+    return this.repo.findMany({ where: { id_ticket } });
+  }
+
   async findOneForUser(userId: string, id_piece_jointe: string) {
     const ctx = await this.access.getUserContext(userId);
     const piece_jointe = await this.repo.findByIdWith({

@@ -1,6 +1,8 @@
 import { Box, Typography, Chip, Paper, CircularProgress, Alert, TextField, Button, MenuItem } from '@mui/material'
+import { List, ListItem, ListItemText, Link } from '@mui/material';
 import useTicketDetail from '../hooks/useTicketDetail'
 import useTicketMessages from '../hooks/useTicketMessages'
+import usePiecesJointes from '../hooks/usePiecesJointes'
 
 const etatColors: Record<string, 'default' | 'info' | 'warning' | 'success' | 'error'> = {
     nouveau: 'info',
@@ -15,6 +17,7 @@ const etats = [ 'nouveau', 'en_cours', 'en_attente', 'resolu', 'ferme' ]
 export default function TicketDetailPage() {
     const { ticket, utilisateurs, loading, error, handleUpdate, isAgent, isManager } = useTicketDetail()
     const { messages, contenu, setContenu, error: msgError, handleSend } = useTicketMessages(ticket?.id_ticket)
+    const { piecesJointes, error: pjError, handleUpload } = usePiecesJointes(ticket?.id_ticket)
 
     if (loading) return <CircularProgress />
     if (error) return <Typography color='error'>{error}</Typography>
@@ -121,6 +124,35 @@ export default function TicketDetailPage() {
                     Envoyer
                 </Button>
             </Box>
+
+            <Typography variant='h5' fontWeight='bold' mt={4} mb={2}>
+                Pièces jointes
+            </Typography>
+
+            {pjError && <Alert severity='error' sx={{ mb: 2}}>{pjError}</Alert>}
+
+            <List>
+                {piecesJointes.length === 0 && (
+                    <Typography color='text.secondary'> Aucune pièce jointe.</Typography>
+                )}
+                {piecesJointes.map(pj => (
+                    <ListItem key={pj.id_piece_jointe}>
+                        <ListItemText primary={
+                            <Link href={`${import.meta.env.VITE_API_URL}${pj.url_path}`} target='_blank'>
+                                {pj.nom_fichier}
+                            </Link>
+                        } />
+                    </ListItem>
+                ))}
+            </List>
+
+            <Button variant='outlined' component='label' sx={{ mt: 1 }}>
+                Ajouter un fichier
+                <input type='file' hidden onChange={e => {
+                    const file = e.target.files?.[0]
+                    if (file) handleUpload(file)
+                }} />
+            </Button>
         </Box>
     )
 }

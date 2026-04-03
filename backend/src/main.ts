@@ -14,7 +14,7 @@ async function bootstrap() {
     }),
   );
 
-  app.useStaticAssets(join(__dirname, '..', 'uploads'), { prefix: '/uploads' });
+  app.useStaticAssets(join(process.cwd(), 'uploads'), { prefix: '/uploads' });
 
   app.enableCors({
     origin: true,

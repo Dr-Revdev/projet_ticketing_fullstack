@@ -152,7 +152,11 @@ export class TicketsService {
         };
       }
 
-      return await this.repo.updateById(id_ticket, data);
+      await this.repo.updateById(id_ticket, data);
+      return this.repo.findByIdWith({
+        where: { id_ticket },
+        include: { categories: { select: { libelle: true } } }
+      });
     } catch (err) {
       if (
         err instanceof Prisma.PrismaClientKnownRequestError &&

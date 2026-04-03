@@ -12,7 +12,7 @@ export default function useTicketDetail() {
 
     const { user } = useAuth()
     const isAgent = !!user && hasAtLeast(user.utilisateurs_roles, 'agent')
-    const isManager = !!user && hasAtLeast(user.utilisateurs_roles, 'mannager')
+    const isManager = !!user && hasAtLeast(user.utilisateurs_roles, 'manager')
 
     const [ticket, setTicket] = useState<Ticket | null>(null)
     const [utilisateurs, setUtilisateurs] = useState<Utilisateur[]>([])
