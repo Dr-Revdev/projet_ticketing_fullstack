@@ -23,6 +23,11 @@ export class HistoriqueActionsController {
     return this.historiqueActionsService.findAll();
   }
 
+  @Get('ticket/:id_ticket')
+  findByTicket(@Param('id_ticket') id_ticket: string) {
+    return this.historiqueActionsService.findByTicket(id_ticket);
+  }
+
   @Get(':id')
   findOne(@Param('id') id_action: string) {
     return this.historiqueActionsService.findOne(id_action);

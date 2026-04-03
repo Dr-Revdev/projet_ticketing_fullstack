@@ -5,12 +5,14 @@ import { TicketRepository } from './tickets.repository';
 import { Prisma } from '@prisma/client';
 import { AccessService } from 'src/access/access.service';
 import { randomUUID } from 'node:crypto';
+import { HistoriqueActionsService } from 'src/historique-actions/historique-actions.service';
 
 @Injectable()
 export class TicketsService {
   constructor(
     private readonly repo: TicketRepository,
     private readonly access: AccessService,
+    private readonly historique: HistoriqueActionsService,
   ) { }
 
   async createForUser(userId: string, dto: CreateTicketDto) {
@@ -153,6 +155,29 @@ export class TicketsService {
       }
 
       await this.repo.updateById(id_ticket, data);
+
+      if (touches.etat) {
+        await this.historique.create({
+          id_action: randomUUID(),
+          type_action: 'changement_etat',
+          detail: `${ticketAccess.etat} -> ${dto.etat}`,
+          id_auteur: userId,
+          id_cible: userId,
+          id_ticket,
+        })
+      }
+
+      if (touches.id_agent_assigne) {
+        await this.historique.create({
+          id_action: randomUUID(),
+          type_action: 'assignation',
+          detail: dto.id_agent_assigne ?? 'désassigné',
+          id_auteur: userId,
+          id_cible: dto.id_agent_assigne ?? userId,
+          id_ticket,
+        })
+      }
+
       return this.repo.findByIdWith({
         where: { id_ticket },
         include: { categories: { select: { libelle: true } } }

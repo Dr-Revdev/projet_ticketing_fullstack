@@ -22,4 +22,16 @@ export class HistoriqueActionRepository {
   findById(id_action: string): Promise<HistoriqueActionModel | null> {
     return this.prisma.historiqueactions.findUnique({ where: { id_action } });
   }
+
+  findByTicket(id_ticket: string) {
+    return this.prisma.historiqueactions.findMany({
+      where: { id_ticket },
+      include: {
+        utilisateurs_historiqueactions_id_auteurToutilisateurs: {
+          select: { nom: true, prenom: true }
+        }
+      },
+      orderBy: { date_action: 'asc' }
+    });
+  }
 }

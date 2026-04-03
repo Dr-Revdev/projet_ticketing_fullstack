@@ -35,4 +35,8 @@ export class HistoriqueActionsService {
     if (!action) throw new NotFoundException('Action non trouvée');
     return action;
   }
+
+  findByTicket(id_ticket: string) {
+    return this.repo.findByTicket(id_ticket);
+  }
 }

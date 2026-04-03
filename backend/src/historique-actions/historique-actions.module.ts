@@ -8,5 +8,6 @@ import { HistoriqueActionRepository } from './historique-actions.repository';
   imports: [PrismaModule],
   controllers: [HistoriqueActionsController],
   providers: [HistoriqueActionsService, HistoriqueActionRepository],
+  exports: [HistoriqueActionsService],
 })
 export class HistoriqueActionsModule {}
