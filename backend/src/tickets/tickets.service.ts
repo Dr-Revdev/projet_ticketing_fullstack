@@ -60,13 +60,33 @@ export class TicketsService {
       };
     }
 
-    return this.repo.create(data);
+    const ticket = await this.repo.create(data);
+
+    await this.historique.create({
+      id_action: randomUUID(),
+      type_action: 'creation',
+      detail: ticket.titre,
+      id_auteur: userId,
+      id_cible: userId,
+      id_ticket: ticket.id_ticket,
+    })
+
+    return ticket;
   }
 
-  async findAllForUser(userId: string) {
+  async findAllForUser(userId: string, filters: { etat?: string, id_categorie?: string, titre?: string } = {}) {
     const ctx = await this.access.getUserContext(userId);
+
+    const where: Prisma.ticketsWhereInput = {
+      ...this.access.ticketWhereFor(ctx),
+    }
+
+    if (filters.etat) where.etat = filters.etat
+    if (filters.id_categorie) where.id_categorie = filters.id_categorie
+    if (filters.titre) where.titre = { contains: filters.titre }
+
     return this.repo.findMany({ 
-      where: this.access.ticketWhereFor(ctx),
+      where,
       include: { categories: { select: { libelle: true } } }
     });
   }

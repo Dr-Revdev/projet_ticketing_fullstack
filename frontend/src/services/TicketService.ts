@@ -22,10 +22,17 @@ export type Categorie = {
 }
 
 // Fonction d'appel de l'API (retourne un JSON)
-export async function fetchTickets(): Promise<Ticket[]> {
+export async function fetchTickets(filters: { etat?: string, id_categorie?: string, titre?: string } = {}): Promise<Ticket[]> {
     const token = localStorage.getItem('access_token')
 
-    const reponse = await fetch(`${API_URL}/tickets`, {
+    const params = new URLSearchParams()
+    if (filters.etat) params.append('etat', filters.etat)
+    if (filters.id_categorie) params.append('id_categorie', filters.id_categorie)
+    if (filters.titre) params.append('titre', filters.titre)
+
+    const query = params.toString() ? `?${params.toString()}` : ''
+
+    const reponse = await fetch(`${API_URL}/tickets${query}`, {
         headers: { Authorization: `Bearer ${token}` }
     })
 

@@ -1,6 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TicketsService } from './tickets.service';
 import { TicketRepository } from './tickets.repository';
+import { AccessService } from 'src/access/access.service';
+import { HistoriqueActionsService } from 'src/historique-actions/historique-actions.service';
+
 
 describe('TicketsService', () => {
   let service: TicketsService;
@@ -14,6 +17,16 @@ describe('TicketsService', () => {
       deleteById: jest.fn(),
     };
 
+    const accessMock = {
+      getUserContext: jest.fn(),
+      hasAtLeast: jest.fn(),
+      isAdmin: jest.fn(),
+      ticketWhereFor: jest.fn(),
+      assertCanReadTicket: jest.fn(),
+      getTicketForAccess: jest.fn(),
+      canReadTicketFromLoaded: jest.fn(),
+    }
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         TicketsService,
@@ -21,8 +34,16 @@ describe('TicketsService', () => {
           provide: TicketRepository,
           useValue: repoMock,
         },
+        {
+          provide: AccessService,
+          useValue: accessMock,
+        },
+        {
+          provide: HistoriqueActionsService,
+          useValue: { create: jest.fn() },
+        }
       ],
-    }).compile();
+    },).compile();
 
     service = module.get<TicketsService>(TicketsService);
   });

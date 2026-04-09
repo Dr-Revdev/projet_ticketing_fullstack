@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Req,
+  Query,
 } from '@nestjs/common';
 import { TicketsService } from './tickets.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
@@ -30,8 +31,13 @@ export class TicketsController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  findAll(@Req() req: Request & { user: { userId: string } }) {
-    return this.ticketsService.findAllForUser(req.user.userId);
+  findAll(
+    @Req() req: Request & { user: { userId: string } },
+    @Query('etat') etat?: string,
+    @Query('id_categorie') id_categorie?: string,
+    @Query('titre') titre?: string,
+  ) {
+    return this.ticketsService.findAllForUser(req.user.userId, { etat, id_categorie, titre });
   }
 
   @Get(':id')
