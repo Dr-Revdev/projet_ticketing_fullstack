@@ -50,6 +50,17 @@ export class AuthService {
     return { access_token };
   }
 
+  async changePassword(userId: string, currentPassword: string, newPassword: string) {
+    const user = await this.repo.findAuthById(userId);
+    if (!user) throw new UnauthorizedException('Utilisatieur introuvable');
+
+    const ok = await bcrypt.compare(currentPassword, user.password_hash);
+    if (!ok) throw new UnauthorizedException('Mot de passe actuel incorrect');
+
+    const password_hash = await bcrypt.hash(newPassword, 10);
+    await this.repo.updateById(userId, { password_hash, password_changed_at: new Date() });
+  }
+
   async me(userId: string) {
     return this.repo.findById(userId);
   }

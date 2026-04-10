@@ -3,9 +3,9 @@ import { IsNotEmpty, IsString } from 'class-validator';
 export class CreateEquipeDto {
   @IsString()
   @IsNotEmpty()
-  id_equipe: string;
+  id_equipe!: string;
 
   @IsString()
   @IsNotEmpty()
-  nom: string;
+  nom!: string;
 }

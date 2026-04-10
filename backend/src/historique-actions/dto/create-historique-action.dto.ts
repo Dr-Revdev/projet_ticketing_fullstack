@@ -3,11 +3,11 @@ import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 export class CreateHistoriqueActionDto {
   @IsString()
   @IsNotEmpty()
-  id_action: string;
+  id_action!: string;
 
   @IsString()
   @IsNotEmpty()
-  type_action: string;
+  type_action!: string;
 
   @IsString()
   @IsOptional()
@@ -15,13 +15,13 @@ export class CreateHistoriqueActionDto {
 
   @IsString()
   @IsNotEmpty()
-  id_cible: string;
+  id_cible!: string;
 
   @IsString()
   @IsNotEmpty()
-  id_auteur: string;
+  id_auteur!: string;
 
   @IsString()
   @IsNotEmpty()
-  id_ticket: string;
+  id_ticket!: string;
 }

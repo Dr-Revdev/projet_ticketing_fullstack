@@ -5,17 +5,17 @@ export const MESSAGE_VISIBILITE = ['public', 'interne'] as const;
 export class CreateMessageDto {
     @IsString()
     @IsNotEmpty()
-    contenu: string;
+    contenu!: string;
 
     @IsString()
     @IsIn(MESSAGE_VISIBILITE)
-    visibilite: string;
+    visibilite!: string;
 
     @IsString()
     @IsNotEmpty()
-    id_utilisateur: string;
+    id_utilisateur!: string;
 
     @IsString()
     @IsNotEmpty()
-    id_ticket: string;
+    id_ticket!: string;
 }

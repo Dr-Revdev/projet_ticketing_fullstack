@@ -18,11 +18,11 @@ export const TICKET_ETATS = [
 export class CreateTicketDto {
   @IsString()
   @IsNotEmpty()
-  titre: string;
+  titre!: string;
 
   @IsString()
   @IsIn(TICKET_ETATS)
-  etat: string;
+  etat!: string;
 
   @IsOptional()
   @IsString()
@@ -30,11 +30,11 @@ export class CreateTicketDto {
 
   @IsString()
   @IsNotEmpty()
-  id_createur: string;
+  id_createur!: string;
 
   @IsString()
   @IsNotEmpty()
-  id_categorie: string;
+  id_categorie!: string;
 
   @ValidateIf((_, v) => v !== null && v !== undefined)
   @IsOptional()

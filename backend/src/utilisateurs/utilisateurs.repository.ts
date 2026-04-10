@@ -52,6 +52,13 @@ export class UtilisateurRepository {
     });
   }
 
+  async findAuthById(id_utilisateur: string) {
+    return this.prisma.utilisateurs.findUnique({
+      where: { id_utilisateur },
+      select: { id_utilisateur: true, password_hash: true },
+    });
+  }
+
   async touchDerniereConnexion(id_utilisateur: string, at: Date = new Date()): Promise<void> {
     await this.prisma.utilisateurs.updateMany({
       where: { id_utilisateur },

@@ -1,6 +1,7 @@
-import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, Button, MenuItem, Alert, IconButton } from '@mui/material'
+import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, Button, MenuItem, Alert, IconButton, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
 import useUtilisateurs from '../hooks/useUtilisateurs'
+import { useState } from 'react'
 
 export default function UtilisateursPage() {
     const {
@@ -9,6 +10,8 @@ export default function UtilisateursPage() {
         setPassword, idEquipe, setIdEquipe, idRole, setIdRole,
         handleCreate, handleDelete,
     } = useUtilisateurs()
+
+    const [userToDelete, setUserToDelete] = useState<string | null>(null)
 
     return (
         <Box>
@@ -64,7 +67,7 @@ export default function UtilisateursPage() {
                                     {u.utilisateurs_roles.map(ur => ur.roles.libelle).join(', ')}
                                 </TableCell>
                                 <TableCell>
-                                    <IconButton color='error' onClick={() => handleDelete(u.id_utilisateur)}>
+                                    <IconButton color='error' onClick={() => setUserToDelete(u.id_utilisateur)}>
                                         <DeleteIcon />
                                     </IconButton>
                                 </TableCell>
@@ -73,6 +76,21 @@ export default function UtilisateursPage() {
                     </TableBody>
                 </Table>
             </TableContainer>
+
+            <Dialog open={userToDelete !== null} onClose={() => setUserToDelete(null)}>
+                <DialogTitle>Confirmer la suppression</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Êtes-vous sûr de vouloir supprimer cet utilisateur ?
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setUserToDelete(null)}>Annuler</Button>
+                    <Button color='error' onClick={() => { handleDelete(userToDelete!); setUserToDelete(null) }}>
+                        Supprimer
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     )
 }
