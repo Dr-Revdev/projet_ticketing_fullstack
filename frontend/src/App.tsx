@@ -10,6 +10,7 @@ import CreateTicketPage from './pages/CreationTicketPage'
 import TicketDetailPage from './pages/TicketDetailPage'
 import ChangePasswordPage from './pages/ChangePasswordPage'
 import UtilisateursPage from './pages/UtilisateursPage'
+import ProfilPage from './pages/ProfilPage'
 
 function App() {
 
@@ -26,6 +27,7 @@ function App() {
             <Route path='/tickets/new' element={<CreateTicketPage />} />
             <Route path='/tickets/:id' element={<TicketDetailPage />} />
             <Route path='/utilisateurs' element={<UtilisateursPage />} />
+            <Route path='/profil' element={<ProfilPage />} />
           </Route>
 
           <Route path='*' element={<Navigate to='/dashboard' replace />} />

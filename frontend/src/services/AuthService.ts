@@ -46,3 +46,19 @@ export async function changePassword(resetToken: string, newPassword: string): P
     
     return reponse.json()
 }
+
+export async function updatePassword(token: string, currentPassword: string, newPassword: string): Promise<void> {
+    const reponse = await fetch(`${API_URL}/auth/me/password`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ currentPassword, newPassword }),
+    })
+
+    if (!reponse.ok) {
+        const err = await reponse.json()
+        throw new Error(err.message ?? 'Erreur lors du changement de mot de passe')
+    }
+}

@@ -55,9 +55,9 @@ export default function DashboardLayout() {
                     <Toolbar sx={{ justifyContent: 'space-between' }}>
                         <Typography variant='h6'>Gestion de Tickets</Typography>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                            <Typography variant='body2'>
+                            <Button color='inherit' onClick={() => navigate('/profil')}>
                                 {user?.prenom} {user?.nom}
-                            </Typography>
+                            </Button>
                             <Button color='inherit' onClick={handleLogout}>
                                 Déconnexion
                             </Button>
