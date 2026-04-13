@@ -1,0 +1,17 @@
+info:
+  name: GET /equipes
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseUrl}}/equipes"
+  auth:
+    type: bearer
+    token: "{{accessToken}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

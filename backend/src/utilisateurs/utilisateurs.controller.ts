@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { UtilisateursService } from './utilisateurs.service';
 import { CreateUtilisateurDto } from './dto/create-utilisateur.dto';
@@ -42,10 +43,12 @@ export class UtilisateursController {
   @Patch(':id')
   @UseGuards(JwtAuthGuard, SelfOrAdminGuard)
   update(
+    @Req() req: Request & { user: { userId: string } },
     @Param('id') id_utilisateur: string,
     @Body() updateUtilisateurDto: UpdateUtilisateurDto,
   ) {
     return this.utilisateursService.update(
+      req.user.userId,
       id_utilisateur,
       updateUtilisateurDto,
     );

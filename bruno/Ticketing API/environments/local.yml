@@ -1,0 +1,20 @@
+name: local
+variables:
+  - name: baseUrl
+    value: http://localhost:3000
+  - name: loginEmail
+    value: test.bruno@test.fr
+  - secret: true
+    name: loginPassword
+  - secret: true
+    name: resetToken
+  - secret: true
+    name: newPassword
+  - secret: true
+    name: accessToken
+  - name: categorieId
+    value: ""
+  - name: equipeId
+    value: ""
+  - name: equipeNom
+    value: Equipe Test Bruno

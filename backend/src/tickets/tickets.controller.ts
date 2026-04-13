@@ -15,6 +15,7 @@ import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Request } from 'express';
+import { Roles } from '../auth/roles.decorator';
 
 @Controller('tickets')
 export class TicketsController {
@@ -65,6 +66,7 @@ export class TicketsController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
+  @Roles('admin')
   remove(
     @Req() req: Request & { user: { userId: string } },
     @Param('id') id_ticket: string,

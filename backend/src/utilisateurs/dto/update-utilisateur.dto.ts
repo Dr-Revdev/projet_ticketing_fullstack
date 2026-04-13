@@ -16,9 +16,4 @@ export class UpdateUtilisateurDto {
   @IsOptional()
   @IsString()
   id_equipe?: string;
-
-  @IsOptional()
-  @IsString()
-  @MinLength(8)
-  password?: string;
 }
