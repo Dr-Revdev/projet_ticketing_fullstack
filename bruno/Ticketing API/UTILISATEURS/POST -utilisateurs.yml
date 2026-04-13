@@ -1,0 +1,27 @@
+info:
+  name: POST /utilisateurs
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/utilisateurs"
+  body:
+    type: json
+    data: |-
+      {
+        "nom": "{{newUserNom}}",
+        "prenom": "{{newUserPrenom}}",
+        "email": "{{newUserEmail}}",
+        "password": "{{newUserPassword}}",
+        "id_equipe": "{{equipeId}}"
+      }
+  auth:
+    type: bearer
+    token: "{{accessToken}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

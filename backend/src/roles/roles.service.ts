@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { RoleRepository } from './roles.repository';
@@ -9,8 +9,15 @@ import { randomUUID } from 'node:crypto';
 export class RolesService {
   constructor(private readonly repo: RoleRepository) { }
 
-  create(dto: CreateRoleDto) {
-    return this.repo.create({ id_role: randomUUID(), ...dto});
+  async create(dto: CreateRoleDto) {
+    try {
+      return await this.repo.create({ id_role: randomUUID(), ...dto});
+    } catch (err) {
+      if (err instanceof Prisma.PrismaClientKnownRequestError) {
+        if (err.code === 'P2002') throw new ConflictException('Ce libelle existe déjà');
+      }
+      throw err;
+    }
   }
 
   findAll() {
@@ -27,11 +34,10 @@ export class RolesService {
     try {
       return await this.repo.updateById(id_role, dto);
     } catch (err) {
-      if (
-        err instanceof Prisma.PrismaClientKnownRequestError &&
-        err.code === 'P2025'
-      ) {
-        throw new NotFoundException('Role non trouvé');
+      if (err instanceof Prisma.PrismaClientKnownRequestError)
+      {
+       if (err.code === 'P2025') throw new NotFoundException('Role non trouvé');
+       if (err.code === 'P2002') throw new ConflictException('Ce libelle existe déjà');
       }
       throw err;
     }

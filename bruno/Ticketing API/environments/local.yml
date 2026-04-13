@@ -19,6 +19,16 @@ variables:
   - name: equipeNom
     value: Equipe Test Bruno
   - name: roleId
-    value: ""
+    value: role-user
   - name: roleLibelle
-    value: Role Test Bruno
+    value: user
+  - name: newUserNom
+    value: Dupont
+  - name: newUserPrenom
+    value: Jean
+  - name: newUserEmail
+    value: jean.dupont.bruno@test.fr
+  - secret: true
+    name: newUserPassword
+  - name: userId
+    value: 1e30291e-513e-4560-8f25-037c9c0ecb07

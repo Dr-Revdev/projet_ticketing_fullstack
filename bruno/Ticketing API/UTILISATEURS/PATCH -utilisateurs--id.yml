@@ -1,0 +1,23 @@
+info:
+  name: PATCH /utilisateurs/:id
+  type: http
+  seq: 4
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/utilisateurs/{{userId}}"
+  body:
+    type: json
+    data: |-
+      {
+        "nom": "Dupont Modifie"
+      }
+  auth:
+    type: bearer
+    token: "{{accessToken}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
