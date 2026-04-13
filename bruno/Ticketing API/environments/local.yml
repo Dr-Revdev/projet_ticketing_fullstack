@@ -13,8 +13,12 @@ variables:
   - secret: true
     name: accessToken
   - name: categorieId
-    value: ""
+    value: 06c64f76-ea2b-4204-87c4-8760412f803c
   - name: equipeId
     value: 2791e559-a098-4744-81a7-050059b513cd
   - name: equipeNom
     value: Equipe Test Bruno
+  - name: roleId
+    value: ""
+  - name: roleLibelle
+    value: Role Test Bruno

@@ -3,13 +3,14 @@ import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { RoleRepository } from './roles.repository';
 import { Prisma } from '@prisma/client';
+import { randomUUID } from 'node:crypto';
 
 @Injectable()
 export class RolesService {
   constructor(private readonly repo: RoleRepository) { }
 
   create(dto: CreateRoleDto) {
-    return this.repo.create(dto);
+    return this.repo.create({ id_role: randomUUID(), ...dto});
   }
 
   findAll() {
