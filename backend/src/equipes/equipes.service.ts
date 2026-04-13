@@ -3,13 +3,14 @@ import { CreateEquipeDto } from './dto/create-equipe.dto';
 import { UpdateEquipeDto } from './dto/update-equipe.dto';
 import { EquipeRepository } from './equipes.repository';
 import { Prisma } from '@prisma/client';
+import { randomUUID } from 'node:crypto';
 
 @Injectable()
 export class EquipesService {
   constructor(private readonly repo: EquipeRepository) {}
 
   create(dto: CreateEquipeDto) {
-    return this.repo.create(dto);
+    return this.repo.create({ id_equipe: randomUUID(), ...dto});
   }
 
   findAll() {
