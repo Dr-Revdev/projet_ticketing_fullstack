@@ -15,6 +15,6 @@ variables:
   - name: categorieId
     value: ""
   - name: equipeId
-    value: ""
+    value: 2791e559-a098-4744-81a7-050059b513cd
   - name: equipeNom
     value: Equipe Test Bruno
