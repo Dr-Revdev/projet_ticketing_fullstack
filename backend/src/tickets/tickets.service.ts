@@ -3,9 +3,9 @@ import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
 import { TicketRepository } from './tickets.repository';
 import { Prisma } from '@prisma/client';
-import { AccessService } from 'src/access/access.service';
+import { AccessService } from '../access/access.service';
 import { randomUUID } from 'node:crypto';
-import { HistoriqueActionsService } from 'src/historique-actions/historique-actions.service';
+import { HistoriqueActionsService } from '../historique-actions/historique-actions.service';
 
 @Injectable()
 export class TicketsService {

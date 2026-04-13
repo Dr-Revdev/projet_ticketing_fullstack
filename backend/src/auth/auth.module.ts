@@ -8,7 +8,7 @@ import { UtilisateursModule } from '../utilisateurs/utilisateurs.module';
 import type { StringValue } from 'ms';
 import { JwtStrategy } from './jwt.strategy';
 import { JwtResetStrategy } from './jwt-reset.strategy';
-import { UtilisateursRolesModule } from 'src/utilisateurs-roles/utilisateurs-roles.module';
+import { UtilisateursRolesModule } from '../utilisateurs-roles/utilisateurs-roles.module';
 import { RolesGuard } from './roles.guard';
 
 @Module({

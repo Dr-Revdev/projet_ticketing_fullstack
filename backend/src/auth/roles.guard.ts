@@ -1,6 +1,6 @@
 import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
-import { UtilisateursRolesRepository } from "src/utilisateurs-roles/utilisateurs-roles.repository";
+import { UtilisateursRolesRepository } from "../utilisateurs-roles/utilisateurs-roles.repository";
 import { ROLES_KEY } from "./roles.decorator";
 
 type CanonicalRole = 'user' | 'agent' | 'manager' | 'admin';

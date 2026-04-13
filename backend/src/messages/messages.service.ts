@@ -3,7 +3,7 @@ import { CreateMessageDto } from './dto/create-message.dto';
 // import { UpdateMessageDto } from './dto/update-message.dto';
 import { MessageRepository } from './message.repository';
 import { Prisma } from '@prisma/client';
-import { AccessService } from 'src/access/access.service';
+import { AccessService } from '../access/access.service';
 import { randomUUID } from 'node:crypto';
 
 @Injectable()

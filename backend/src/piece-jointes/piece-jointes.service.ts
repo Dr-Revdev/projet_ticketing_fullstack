@@ -3,7 +3,7 @@ import { CreatePieceJointeDto } from './dto/create-piece-jointe.dto';
 // import { UpdatePieceJointeDto } from './dto/update-piece-jointe.dto';
 import { PieceJointeRepository } from './piece-jointes.repository';
 import { Prisma } from '@prisma/client';
-import { AccessService } from 'src/access/access.service';
+import { AccessService } from '../access/access.service';
 
 @Injectable()
 export class PieceJointesService {
