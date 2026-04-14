@@ -7,7 +7,7 @@ export default function ProfilPage() {
     } = useProfil()
 
     return (
-        <Box>
+        <Box sx={{ maxWidth: 500, mx: 'auto' }}>
             <Typography variant='h4' fontWeight='bold' mb={3}>Mon profil</Typography>
             <Paper sx={{ p: 3, maxWidth: 400, mb: 3 }}>
                 <Typography variant='h6' mb={2}>Mes informations</Typography>
