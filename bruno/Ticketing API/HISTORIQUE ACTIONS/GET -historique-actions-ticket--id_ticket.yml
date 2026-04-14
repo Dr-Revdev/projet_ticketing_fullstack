@@ -1,0 +1,17 @@
+info:
+  name: GET /historique-actions/ticket/:id_ticket
+  type: http
+  seq: 3
+
+http:
+  method: GET
+  url: "{{baseUrl}}/historique-actions/ticket/{{ticketId}}"
+  auth:
+    type: bearer
+    token: "{{accessToken}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

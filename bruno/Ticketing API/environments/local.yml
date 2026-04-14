@@ -1,4 +1,5 @@
 name: local
+color: "#346AB2"
 variables:
   - name: baseUrl
     value: http://localhost:3000
@@ -31,4 +32,16 @@ variables:
   - secret: true
     name: newUserPassword
   - name: userId
-    value: 1e30291e-513e-4560-8f25-037c9c0ecb07
+    value: 6ef16516-a9cc-406f-a8b4-ec9728709c5e
+  - name: ticketId
+    value: 70347c5b-5067-4b35-b4bd-119e4db21409
+  - name: messageId
+    value: 3356d630-c851-4b5c-852f-e60eb0363a19
+  - name: pieceJointeId
+    value: abcb0211-dcb8-4f1d-b193-adceff68d176
+  - name: historiqueId
+    value: ""
+  - name: actionId
+    value: ""
+  - name: cibleId
+    value: ""

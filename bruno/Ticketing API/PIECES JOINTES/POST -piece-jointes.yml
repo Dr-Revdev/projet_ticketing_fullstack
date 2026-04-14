@@ -1,0 +1,27 @@
+info:
+  name: POST /piece-jointes
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/piece-jointes"
+  body:
+    type: multipart-form
+    data:
+      - name: file
+        type: file
+        value:
+          - C:\Users\iwanr\OneDrive - Iwan Robert\Dokumente\Dossier candidature études\code établisement Lycée Militaire d'Autun.txt
+      - name: id_ticket
+        type: text
+        value: "{{ticketId}}"
+  auth:
+    type: bearer
+    token: "{{accessToken}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

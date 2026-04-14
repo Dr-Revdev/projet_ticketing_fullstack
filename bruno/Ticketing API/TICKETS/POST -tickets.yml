@@ -1,0 +1,26 @@
+info:
+  name: POST /tickets
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/tickets"
+  body:
+    type: json
+    data: |-
+      {
+        "titre": "Ticket de test Bruno",
+        "etat": "nouveau",
+        "id_categorie": "{{categorieId}}",
+        "id_createur": "{{userId}}"
+      }
+  auth:
+    type: bearer
+    token: "{{accessToken}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

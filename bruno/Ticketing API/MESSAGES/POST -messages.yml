@@ -1,0 +1,26 @@
+info:
+  name: POST /messages
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/messages"
+  body:
+    type: json
+    data: |-
+      {
+        "contenu": "Message de test Bruno",
+        "visibilite": "public",
+        "id_ticket": "{{ticketId}}",
+        "id_utilisateur": "{{userId}}"
+      }
+  auth:
+    type: bearer
+    token: "{{accessToken}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
