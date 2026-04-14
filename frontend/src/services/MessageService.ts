@@ -28,7 +28,6 @@ export async function fetchMessages(idTicket: string): Promise<Message[]> {
 export async function createMessage(data:{
     contenu: string
     visibilite: string
-    id_utilisateur: string
     id_ticket: string
 }): Promise<Message> {
     const token = localStorage.getItem('access_token')

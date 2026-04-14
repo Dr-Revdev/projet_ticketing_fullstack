@@ -46,7 +46,7 @@ export class RolesGuard implements CanActivate {
         if (!userId) throw new ForbiddenException('Non authentifié');
 
         const links = await this.userRolesRepo.listForUser(userId);
-        const roleIds = links.map((x: any) => x.roles.libelle);
+        const roleIds = links.map((x) => x.roles.libelle);
 
         const userLevel = maxRoleLevel(roleIds);
 

@@ -32,14 +32,12 @@ export default function useCreateTicket() {
             const ticket = await createTicket({
                 titre,
                 etat: 'nouveau',
-                id_createur: user.id_utilisateur,
                 id_categorie: idCategorie,
             })
 
             await createMessage({
                 contenu: description,
                 visibilite: 'public',
-                id_utilisateur: user.id_utilisateur,
                 id_ticket: ticket.id_ticket,
             })
 

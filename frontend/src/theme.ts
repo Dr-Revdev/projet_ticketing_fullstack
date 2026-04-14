@@ -1,4 +1,3 @@
-import { BorderBottom } from "@mui/icons-material";
 import { createTheme } from "@mui/material/styles";
 
 const theme = createTheme({
@@ -50,7 +49,7 @@ const theme = createTheme({
                     '& .MuiTableCell-root': {
                         color: '#94a3b8',
                         fontWeight: 600,
-                        BorderBottom: '1px solid #2d3148',
+                        borderBottom: '1px solid #2d3148',
                     },
                 },
             },

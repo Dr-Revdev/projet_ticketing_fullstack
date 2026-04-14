@@ -11,7 +11,7 @@ export type Ticket = {
     id_createur: string
     id_categorie: string
     id_agent_assigne: string | null
-    achived_at: string | null
+    archived_at: string | null
     categories: { libelle: string }
 }
 
@@ -76,7 +76,6 @@ export async function fetchCategories(): Promise<Categorie[]> {
 export async function createTicket(ticket: {
     titre: string
     etat: string
-    id_createur: string
     id_categorie: string
 }): Promise<Ticket> {
     const token = localStorage.getItem('access_token')

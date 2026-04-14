@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateHistoriqueActionDto } from './dto/create-historique-action.dto';
 import { HistoriqueActionRepository } from './historique-actions.repository';
 import { Prisma } from '@prisma/client';
+import { randomUUID } from 'node:crypto';
 
 @Injectable()
 export class HistoriqueActionsService {
@@ -9,7 +10,7 @@ export class HistoriqueActionsService {
 
   create(dto: CreateHistoriqueActionDto) {
     const data: Prisma.historiqueactionsCreateInput = {
-      id_action: dto.id_action,
+      id_action: randomUUID(),
       type_action: dto.type_action,
       detail: dto.detail,
       utilisateurs_historiqueactions_id_cibleToutilisateurs: {

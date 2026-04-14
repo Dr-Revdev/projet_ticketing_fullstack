@@ -4,20 +4,25 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 import { CategorieRepository } from './categories.repository';
 import { Prisma } from '@prisma/client';
 import { randomUUID } from 'node:crypto';
+import { ConflictException } from '@nestjs/common';
 
 @Injectable()
 export class CategoriesService {
   constructor(private readonly repo: CategorieRepository) {}
 
-  create(dto: CreateCategoryDto) {
-    const data: Prisma.categoriesCreateInput = {
-      id_categorie: randomUUID(),
-      libelle: dto.libelle,
-      equipes: {
-        connect: { id_equipe: dto.id_equipe },
-      },
-    };
-    return this.repo.create(data);
+  async create(dto: CreateCategoryDto) {
+      try {
+          const data: Prisma.categoriesCreateInput = {
+              id_categorie: randomUUID(),
+              libelle: dto.libelle,
+              equipes: { connect: { id_equipe: dto.id_equipe } },
+          };
+          return await this.repo.create(data);
+      } catch (err) {
+          if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002')
+              throw new ConflictException('Ce libelle existe déjà');
+          throw err;
+      }
   }
 
   findAll() {

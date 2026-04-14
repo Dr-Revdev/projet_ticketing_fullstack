@@ -30,10 +30,6 @@ export class CreateTicketDto {
 
   @IsString()
   @IsNotEmpty()
-  id_createur!: string;
-
-  @IsString()
-  @IsNotEmpty()
   id_categorie!: string;
 
   @ValidateIf((_, v) => v !== null && v !== undefined)

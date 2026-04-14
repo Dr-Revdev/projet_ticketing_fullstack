@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { CreateUtilisateurDto } from './dto/create-utilisateur.dto';
 import { UpdateUtilisateurDto } from './dto/update-utilisateur.dto';
 import { UtilisateurRepository } from './utilisateurs.repository';
@@ -15,19 +15,22 @@ export class UtilisateursService {
   ) { }
 
   async create(dto: CreateUtilisateurDto) {
-    const password_hash = await bcrypt.hash(dto.password, 10)
-
-    const data: Prisma.utilisateursCreateInput = {
-      id_utilisateur: randomUUID(),
-      nom: dto.nom,
-      prenom: dto.prenom,
-      email: dto.email,
-      password_hash,
-      equipes: {
-        connect: { id_equipe: dto.id_equipe },
-      },
-    };
-    return this.repo.create(data);
+      try {
+          const password_hash = await bcrypt.hash(dto.password, 10)
+          const data: Prisma.utilisateursCreateInput = {
+              id_utilisateur: randomUUID(),
+              nom: dto.nom,
+              prenom: dto.prenom,
+              email: dto.email,
+              password_hash,
+              equipes: { connect: { id_equipe: dto.id_equipe } },
+          };
+          return await this.repo.create(data);
+      } catch (err) {
+          if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002')
+              throw new ConflictException('Cet email est déjà utilisé');
+          throw err;
+      }
   }
 
   findAll() {
@@ -56,11 +59,9 @@ export class UtilisateursService {
 
       return await this.repo.updateById(id_utilisateur, data);
     } catch (err) {
-      if (
-        err instanceof Prisma.PrismaClientKnownRequestError &&
-        err.code === 'P2025'
-      ) {
-        throw new NotFoundException('Utilisateur non trouvé');
+        if (err instanceof Prisma.PrismaClientKnownRequestError) {
+        if (err.code === 'P2025') throw new NotFoundException('Utilisateur non trouvé');
+        if (err.code === 'P2002') throw new ConflictException('Cet email est déjà utilisé');
       }
       throw err;
     }
@@ -74,7 +75,7 @@ export class UtilisateursService {
         err instanceof Prisma.PrismaClientKnownRequestError &&
         err.code === 'P2025'
       ) {
-        throw new NotFoundException('Utilistateur non trouvé');
+        throw new NotFoundException('Utilisateur non trouvé');
       }
       throw err;
     }
