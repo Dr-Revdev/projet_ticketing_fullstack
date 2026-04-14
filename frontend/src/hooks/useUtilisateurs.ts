@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { SubmitEvent } from "react";
-import { fetchUtilisateurs, createUtilisateur, /*updateUtilisateur,*/ deleteUtilisateur, fetchRoles, assignRole } from "../services/UtilisateurService";
+import { fetchUtilisateurs, createUtilisateur, updateUtilisateur, deleteUtilisateur, fetchRoles, assignRole } from "../services/UtilisateurService";
 import type { Utilisateur, Role } from "../services/UtilisateurService";
 import { fetchEquipes } from "../services/EquipeService"
 import type { Equipe } from "../services/EquipeService";
@@ -19,11 +19,27 @@ export default function useUtilisateurs() {
     const [idEquipe, setIdEquipe] = useState('')
     const [idRole, setIdRole] = useState('')
 
+    // Modification des utilisateurs
+    const [utilisateurToEdit, setUtilisateurToEdit] = useState<Utilisateur | null>(null)
+    const [editNom, setEditNom] = useState('')
+    const [editPrenom, setEditPrenom] = useState('')
+    const [editEmail, setEditEmail] = useState('')
+    const [editIdEquipe, setEditIdEquipe] = useState('')
+
     useEffect(() => {
         Promise.all([fetchUtilisateurs(), fetchEquipes(), fetchRoles()])
             .then(([u, e, r]) => { setUtilisateurs(u); setEquipes(e); setRoles(r) })
             .catch(err => setError(err.message))
     }, [])
+
+    
+    const openEdit = (u: Utilisateur) => {
+        setUtilisateurToEdit(u)
+        setEditNom(u.nom)
+        setEditPrenom(u.prenom)
+        setEditEmail(u.email)
+        setEditIdEquipe(u.id_equipe)
+    }
 
     const handleCreate = async (e: SubmitEvent) => {
         e.preventDefault()
@@ -55,10 +71,29 @@ export default function useUtilisateurs() {
         }
     }
 
+    const handleUpdate = async (e: SubmitEvent) => {
+        e.preventDefault()
+        if (!utilisateurToEdit) return
+        setError(null)
+
+        try {
+            await updateUtilisateur(utilisateurToEdit.id_utilisateur, {
+                nom: editNom, prenom: editPrenom, email: editEmail, id_equipe: editIdEquipe
+            })
+            const updated = await fetchUtilisateurs()
+            setUtilisateurs(updated)
+            setUtilisateurToEdit(null)
+        } catch (err: any) {
+            setError(err.message)
+        }
+    }
+
     return {
         utilisateurs, equipes, roles, error,
         nom, setNom, prenom, setPrenom, email, setEmail, password, 
         setPassword, idEquipe, setIdEquipe, idRole, setIdRole,
-        handleCreate, handleDelete,
+        handleCreate, handleDelete, utilisateurToEdit, setUtilisateurToEdit, 
+        editNom, setEditNom, editPrenom, setEditPrenom, editEmail, setEditEmail,
+        editIdEquipe, setEditIdEquipe, openEdit, handleUpdate,
     }
 }

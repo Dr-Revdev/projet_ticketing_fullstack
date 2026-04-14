@@ -8,6 +8,9 @@ export type UserProfile = {
     prenom: string
     email: string
     id_equipe: string
+    equipes: {
+        nom: string
+    }
     utilisateurs_roles: {
         roles: {
             id_role: string

@@ -3,15 +3,22 @@ import useProfil from '../hooks/useProfil'
 
 export default function ProfilPage() {
     const { currentPassword, setCurrentPassword, newPassword, setNewPassword, 
-        confirmPassword, setConfirmPassword, error, success, handleSubmit 
+        confirmPassword, setConfirmPassword, error, success, handleSubmit, user 
     } = useProfil()
 
     return (
         <Box>
             <Typography variant='h4' fontWeight='bold' mb={3}>Mon profil</Typography>
-
+            <Paper sx={{ p: 3, maxWidth: 400, mb: 3 }}>
+                <Typography variant='h6' mb={2}>Mes informations</Typography>
+                <Typography><strong>Nom :</strong> {user?.nom} {user?.prenom}</Typography>
+                <Typography><strong>Email :</strong> {user?.email}</Typography>
+                <Typography><strong>Équipe :</strong> {user?.equipes?.nom}</Typography>
+                <Typography><strong>Rôle :</strong> {user?.utilisateurs_roles.map(ur => ur.roles.libelle).join(', ')}</Typography>
+            </Paper>
             <Paper sx={{ p: 3, maxWidth: 400 }}>
                 <Typography variant='h6' mb={2}>Changer le mot de passe</Typography>
+
 
                 {error && <Alert severity='error' sx={{ mb: 2 }}>{error}</Alert>}
                 {success && <Alert severity='success' sx={{ mb: 2 }}>Mot de passe modifié avec succès</Alert>}
