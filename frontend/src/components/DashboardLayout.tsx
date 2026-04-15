@@ -78,17 +78,22 @@ export default function DashboardLayout() {
             <Divider sx={{ borderColor: '#2d3148' }} />
 
             {/* Profil en bas */}
-            <Box
-                sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 1.5, cursor: 'pointer', '&:hover': { backgroundColor: 'rgba(99,102,241,0.08)' }, borderRadius: 2, m: 1 }}
-                onClick={() => navigate('/profil')}
-            >
-                <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main', fontSize: 14 }}>
-                    {user?.prenom?.[0]}{user?.nom?.[0]}
-                </Avatar>
-                <Box>
-                    <Typography variant='body2' fontWeight={600}>{user?.prenom} {user?.nom}</Typography>
-                    <Typography variant='caption' color='text.secondary'>{user?.utilisateurs_roles[0]?.roles.libelle}</Typography>
+            <Box sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 1.5, m: 1 }}>
+                <Box
+                    sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flex: 1, cursor: 'pointer', '&:hover': { backgroundColor: 'rgba(99,102,241,0.08)' }, borderRadius: 2, p: 1 }}
+                    onClick={() => navigate('/profil')}
+                >
+                    <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main', fontSize: 14 }}>
+                        {user?.prenom?.[0]}{user?.nom?.[0]}
+                    </Avatar>
+                    <Box>
+                        <Typography variant='body2' fontWeight={600}>{user?.prenom} {user?.nom}</Typography>
+                        <Typography variant='caption' color='text.secondary'>{user?.utilisateurs_roles[0]?.roles.libelle}</Typography>
+                    </Box>
                 </Box>
+                <IconButton onClick={handleLogout} size='small' sx={{ color: 'text.secondary' }}>
+                    <LogoutIcon fontSize='small' />
+                </IconButton>
             </Box>
         </Box>
     )

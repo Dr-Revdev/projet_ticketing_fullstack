@@ -1,7 +1,7 @@
 import { ForbiddenException, Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { CreateUtilisateurDto } from './dto/create-utilisateur.dto';
 import { UpdateUtilisateurDto } from './dto/update-utilisateur.dto';
-import { UtilisateurRepository } from './utilisateurs.repository';
+import { UtilisateurRepository, UtilisateurPublic } from './utilisateurs.repository';
 import { Prisma } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { randomUUID } from 'node:crypto';
@@ -15,22 +15,39 @@ export class UtilisateursService {
   ) { }
 
   async create(dto: CreateUtilisateurDto) {
-      try {
-          const password_hash = await bcrypt.hash(dto.password, 10)
-          const data: Prisma.utilisateursCreateInput = {
-              id_utilisateur: randomUUID(),
-              nom: dto.nom,
-              prenom: dto.prenom,
-              email: dto.email,
-              password_hash,
-              equipes: { connect: { id_equipe: dto.id_equipe } },
-          };
-          return await this.repo.create(data);
-      } catch (err) {
-          if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002')
-              throw new ConflictException('Cet email est déjà utilisé');
-          throw err;
-      }
+    try {
+      const password_hash = await bcrypt.hash(dto.password, 10)
+      const id_utilisateur = randomUUID()
+
+      const data: Prisma.utilisateursUncheckedCreateInput = {
+        id_utilisateur,
+        nom: dto.nom,
+        prenom: dto.prenom,
+        email: dto.email,
+        password_hash,
+        id_equipe: dto.id_equipe,
+      };
+      await this.repo.create(data);
+      const result: UtilisateurPublic = {
+        id_utilisateur,
+        nom: dto.nom,
+        prenom: dto.prenom,
+        email: dto.email,
+        id_equipe: dto.id_equipe,
+        derniere_connexion: null,
+        utilisateurs_roles: [],
+        equipes: { nom: '' },
+      };
+
+      // L'adaptateur MariaDB ne retourne pas l'enregistrement après create().
+      // equipes.nom et utilisateurs_roles sont vides car non disponibles sans refetch.
+      // Le frontend appelle fetchUtilisateurs() immédiatement après — ces valeurs ne sont jamais affichées.
+      return result;
+    } catch (err) {
+      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002')
+        throw new ConflictException('Cet email est déjà utilisé');
+      throw err;
+    }
   }
 
   findAll() {
@@ -59,7 +76,7 @@ export class UtilisateursService {
 
       return await this.repo.updateById(id_utilisateur, data);
     } catch (err) {
-        if (err instanceof Prisma.PrismaClientKnownRequestError) {
+      if (err instanceof Prisma.PrismaClientKnownRequestError) {
         if (err.code === 'P2025') throw new NotFoundException('Utilisateur non trouvé');
         if (err.code === 'P2002') throw new ConflictException('Cet email est déjà utilisé');
       }

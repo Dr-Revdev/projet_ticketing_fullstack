@@ -4,7 +4,6 @@ import { updatePassword } from "../services/AuthService";
 import { useAuth } from "../contexts/AuthContext";
 
 export default function useProfil() {
-    const token = localStorage.getItem('access_token')
     const { user } = useAuth()
 
     const [currentPassword, setCurrentPassword] = useState('')
@@ -24,7 +23,7 @@ export default function useProfil() {
         }
 
         try {
-            await updatePassword(token!, currentPassword, newPassword)
+            await updatePassword(currentPassword, newPassword)
             setSuccess(true)
             setCurrentPassword('')
             setNewPassword('')

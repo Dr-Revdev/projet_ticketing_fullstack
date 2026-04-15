@@ -1,7 +1,6 @@
 // Service pour la connexion API Login
 
-// URL de base de l'API
-const API_URL = import.meta.env.VITE_API_URL;
+import { apiClient } from "./apiClient";
 
 // Types pour les retours de l'API
 export type LoginSuccessResponse = {
@@ -17,16 +16,8 @@ export type LoginResponse = LoginSuccessResponse | LoginResetResponse;
 
 // Fonction d'appel de l'API (retourne un JSON)
 export async function login(email: string, password: string): Promise<LoginResponse> {
-    const reponse = await fetch(`${API_URL}/auth/login`, {
+    return apiClient<LoginResponse>('/auth/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
     });
-
-    if (!reponse.ok) {
-        const error = await reponse.json();
-        throw new Error(error.message ?? 'Erreur de connexion');
-    }
-
-    return reponse.json();
 }

@@ -14,25 +14,25 @@ export class PieceJointesService {
 
   async createForUser(userId: string, dto: CreatePieceJointeDto) {
     const ctx = await this.access.getUserContext(userId);
-
-    if (dto.id_utilisateur && dto.id_utilisateur !== userId) {
-      throw new ForbiddenException("id_utilisateur ne peut pas être un autre utilisateur");
-    }
     await this.access.assertCanReadTicket(ctx, dto.id_ticket);
 
-    const data: Prisma.piecejointesCreateInput = {
+    const data: Prisma.piecejointesUncheckedCreateInput = {
       id_piece_jointe: dto.id_piece_jointe,
       nom_fichier: dto.nom_fichier,
       url_path: dto.url_path,
-      utilisateurs: {
-        connect: { id_utilisateur: userId },
-      },
-      tickets: {
-        connect: { id_ticket: dto.id_ticket },
-      },
+      id_utilisateur: userId,
+      id_ticket: dto.id_ticket,
     };
 
-    return this.repo.create(data);
+    await this.repo.create(data);
+
+    return {
+      id_piece_jointe: dto.id_piece_jointe,
+      nom_fichier: dto.nom_fichier,
+      url_path: dto.url_path,
+      id_utilisateur: userId,
+      id_ticket: dto.id_ticket,
+    };
   }
 
   async findAllForUser(userId: string) {

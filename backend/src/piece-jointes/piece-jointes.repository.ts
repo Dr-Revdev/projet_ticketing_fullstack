@@ -6,7 +6,7 @@ import { PrismaService } from '../prisma/prisma.service';
 export class PieceJointeRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  create(data: Prisma.piecejointesCreateInput): Promise<PieceJointeModel> {
+  create(data: Prisma.piecejointesUncheckedCreateInput): Promise<PieceJointeModel> {
     return this.prisma.piecejointes.create({ data });
   }
 
