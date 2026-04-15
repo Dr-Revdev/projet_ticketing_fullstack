@@ -18,6 +18,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<UserProfile | null>(null)
     const [loading, setLoading] = useState(true)
 
+    const logout = () => {
+        localStorage.removeItem('access_token')
+        setUser(null)
+    }
+
+    const login = async (token: string) => {
+        localStorage.setItem('access_token', token)
+        const profile = await fetchMe()
+        setUser(profile)
+    }
+
     useEffect(() => {
         setUnauthorizedCallback(logout)
         const token = localStorage.getItem('access_token')
@@ -27,17 +38,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
         fetchMe().then(profile => setUser(profile)).catch(() => localStorage.removeItem('access_token')).finally(() => setLoading(false))
     }, [])
-
-    const login = async (token: string) => {
-        localStorage.setItem('access_token', token)
-        const profile = await fetchMe()
-        setUser(profile)
-    }
-
-    const logout = () => {
-        localStorage.removeItem('access_token')
-        setUser(null)
-    }
 
     if (loading) return null
 

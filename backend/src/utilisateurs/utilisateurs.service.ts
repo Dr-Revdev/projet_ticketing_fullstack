@@ -38,6 +38,10 @@ export class UtilisateursService {
         utilisateurs_roles: [],
         equipes: { nom: '' },
       };
+
+      // L'adaptateur MariaDB ne retourne pas l'enregistrement après create().
+      // equipes.nom et utilisateurs_roles sont vides car non disponibles sans refetch.
+      // Le frontend appelle fetchUtilisateurs() immédiatement après — ces valeurs ne sont jamais affichées.
       return result;
     } catch (err) {
       if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002')

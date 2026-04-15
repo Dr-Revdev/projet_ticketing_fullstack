@@ -68,6 +68,9 @@ export class TicketsService {
       id_ticket,
     })
 
+    // L'adaptateur MariaDB ne retourne pas l'enregistrement après create().
+    // categories.libelle est vide car non disponible sans refetch.
+    // Le frontend navigue vers /tickets et re-fetch la liste — cette valeur n'est jamais affichée.
     return {
       id_ticket,
       titre: dto.titre,
@@ -127,6 +130,7 @@ export class TicketsService {
       archived_at: dto.archived_at !== undefined,
       id_categorie: dto.id_categorie !== undefined,
       id_agent_assigne: dto.id_agent_assigne !== undefined,
+      id_createur: dto.id_createur !== undefined,
     };
 
     if (!this.access.hasAtLeast(ctx, 'agent')) {
@@ -145,6 +149,9 @@ export class TicketsService {
       if (touches.id_agent_assigne && !this.access.hasAtLeast(ctx, 'manager')) {
         throw new ForbiddenException('Assignation/désassignation réservée à Manager+');
       }
+      if (touches.id_createur && !this.access.hasAtLeast(ctx, 'admin')) {
+        throw new ForbiddenException('Changement de créateur réservé à Admin');
+      }
       if ((touches.id_categorie || touches.titre) && !this.access.hasAtLeast(ctx, 'manager')) {
         throw new ForbiddenException('Modification titre/catégorie réservée à Manager+');
       }
@@ -160,6 +167,12 @@ export class TicketsService {
 
       if (dto.id_categorie !== undefined) {
         data.categories = { connect: { id_categorie: dto.id_categorie } };
+      }
+
+      if (dto.id_createur !== undefined) {
+        data.utilisateurs_tickets_id_createurToutilisateurs = {
+          connect: { id_utilisateur: dto.id_createur },
+        };
       }
 
 
