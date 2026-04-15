@@ -1,24 +1,27 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateMessageDto } from './dto/create-message.dto';
-// import { UpdateMessageDto } from './dto/update-message.dto';
 import { MessageRepository } from './message.repository';
 import { Prisma } from '@prisma/client';
 import { AccessService } from '../access/access.service';
 import { randomUUID } from 'node:crypto';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class MessagesService {
   constructor(
     private readonly repo: MessageRepository,
     private readonly access: AccessService,
+    private readonly prisma: PrismaService,
   ) { }
 
   async createForUser(userId: string, dto: CreateMessageDto) {
-    const ctx = await this.access.getUserContext(userId);
-
-    if (dto.id_utilisateur && dto.id_utilisateur !== userId) {
-      throw new ForbiddenException("id_utilisateur ne peut pas être un autre utilisateur");
-    }
+    const [ctx, auteur] = await Promise.all([
+      this.access.getUserContext(userId),
+      this.prisma.utilisateurs.findUnique({
+        where: { id_utilisateur: userId },
+        select: { id_utilisateur: true, nom: true, prenom: true }
+      })
+    ]);
 
     await this.access.assertCanReadTicket(ctx, dto.id_ticket);
 
@@ -26,27 +29,27 @@ export class MessagesService {
       throw new ForbiddenException("visibilite=interne réservé au staff (Agent+)");
     }
 
-    const data: Prisma.messagesCreateInput = {
-      id_message: randomUUID(),
+    const id_message = randomUUID()
+
+    const data: Prisma.messagesUncheckedCreateInput = {
+      id_message,
       contenu: dto.contenu,
       visibilite: dto.visibilite,
-      utilisateurs: {
-        connect: { id_utilisateur: userId },
-      },
-      tickets: {
-        connect: { id_ticket: dto.id_ticket },
-      },
+      id_utilisateur: userId,
+      id_ticket: dto.id_ticket,
     };
 
-    const message = await this.repo.create(data);
-    return this.repo.findByIdWith({
-      where: { id_message: message.id_message },
-      include: {
-        utilisateurs: {
-          select: { id_utilisateur: true, nom: true, prenom: true }
-        }
-      }
-    });
+    await this.repo.create(data);
+
+    return {
+      id_message,
+      contenu: dto.contenu,
+      visibilite: dto.visibilite,
+      date_message: new Date(),
+      id_utilisateur: userId,
+      id_ticket: dto.id_ticket,
+      utilisateurs: auteur!,
+    };
   }
 
   async findAllForUser(userId: string, id_ticket?: string) {
@@ -64,7 +67,7 @@ export class MessagesService {
       where.visibilite = 'public';
     }
 
-    return this.repo.findMany({ 
+    return this.repo.findMany({
       where,
       include: {
         utilisateurs: {

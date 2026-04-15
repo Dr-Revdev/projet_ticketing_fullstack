@@ -17,16 +17,16 @@ const utilisateurPublicSelect = {
   },
 } satisfies Prisma.utilisateursSelect;
 
-type UtilisateurPublic = Prisma.utilisateursGetPayload<{
+export type UtilisateurPublic = Prisma.utilisateursGetPayload<{
   select: typeof utilisateurPublicSelect;
 }>;
 @Injectable()
 export class UtilisateurRepository {
   constructor(private readonly prisma: PrismaService) { }
 
-  create(data: Prisma.utilisateursCreateInput): Promise<UtilisateurPublic> {
-    return this.prisma.utilisateurs.create({ data, select: utilisateurPublicSelect });
-  }
+  create(data: Prisma.utilisateursCreateInput | Prisma.utilisateursUncheckedCreateInput): Promise<UtilisateurPublic> {
+    return this.prisma.utilisateurs.create({ data: data as Prisma.utilisateursCreateInput, select: utilisateurPublicSelect });
+}
 
   findAll(): Promise<UtilisateurPublic[]> {
     return this.prisma.utilisateurs.findMany({ select: utilisateurPublicSelect });

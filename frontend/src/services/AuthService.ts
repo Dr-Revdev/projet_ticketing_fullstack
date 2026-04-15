@@ -1,5 +1,4 @@
-// URL de base de l'API
-const API_URL = import.meta.env.VITE_API_URL
+import { apiClient } from "./apiClient"
 
 // Type du profil utilisateur
 export type UserProfile = {
@@ -20,19 +19,12 @@ export type UserProfile = {
 }
 
 // Fonction d'appel de l'API (retourne un JSON)
-export async function fetchMe(token: string): Promise<UserProfile> {
-    const reponse = await fetch(`${API_URL}/auth/me`, {
-        headers: { Authorization: `Bearer ${token}`}
-    })
-
-    if (!reponse.ok) {
-        throw new Error('Impossible de récupérer le profil')
-    }
-
-    return reponse.json()
+export async function fetchMe(): Promise<UserProfile> {
+    return apiClient<UserProfile>('/auth/me')
 }
 
 export async function changePassword(resetToken: string, newPassword: string): Promise<{ access_token: string }> {
+    const API_URL = import.meta.env.VITE_API_URL
     const reponse = await fetch(`${API_URL}/auth/change-password`, {
         method: 'POST',
         headers: {
@@ -50,18 +42,9 @@ export async function changePassword(resetToken: string, newPassword: string): P
     return reponse.json()
 }
 
-export async function updatePassword(token: string, currentPassword: string, newPassword: string): Promise<void> {
-    const reponse = await fetch(`${API_URL}/auth/me/password`, {
+export async function updatePassword(currentPassword: string, newPassword: string): Promise<void> {
+    return apiClient<void>('/auth/me/password', {
         method: 'PATCH',
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-        },
         body: JSON.stringify({ currentPassword, newPassword }),
     })
-
-    if (!reponse.ok) {
-        const err = await reponse.json()
-        throw new Error(err.message ?? 'Erreur lors du changement de mot de passe')
-    }
 }
