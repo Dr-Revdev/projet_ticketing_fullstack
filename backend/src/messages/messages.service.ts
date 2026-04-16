@@ -104,16 +104,8 @@ export class MessagesService {
   }
 
   async remove(id_message: string) {
-    try {
-      return await this.repo.deleteById(id_message);
-    } catch (err) {
-      if (
-        err instanceof Prisma.PrismaClientKnownRequestError &&
-        err.code === 'P2025'
-      ) {
-        throw new NotFoundException('Message non trouvé');
-      }
-      throw err;
-    }
+    const existing = await this.repo.findById(id_message);
+    if (!existing) throw new NotFoundException('Message non trouvé');
+    return this.repo.deleteById(id_message);
   }
 }

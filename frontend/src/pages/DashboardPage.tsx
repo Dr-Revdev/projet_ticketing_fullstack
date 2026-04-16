@@ -3,6 +3,7 @@ import { Box, Typography, Card, CardContent, CircularProgress,
     TableRow, Paper, Chip } from '@mui/material';
 import { useAuth } from '../contexts/AuthContext';
 import useDashboard from '../hooks/useDashboard';
+import { etatColors } from '../utils/tickets';
 import { useNavigate } from 'react-router-dom';
 
 const etats = [
@@ -13,13 +14,6 @@ const etats = [
     { key: 'ferme', label: 'Fermé', color: '#d32f2f' },
 ]
 
-const etatColors: Record<string, 'default' | 'info' | 'warning' | 'success' | 'error'> = {
-    nouveau: 'info',
-    en_cours: 'warning',
-    en_attente: 'default',
-    resolu: 'success',
-    ferme: 'error',
-}
 
 export default function DashboardPage() {
     const { user } = useAuth()

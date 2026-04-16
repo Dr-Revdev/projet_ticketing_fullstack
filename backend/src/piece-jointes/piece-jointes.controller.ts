@@ -1,4 +1,5 @@
 import { Controller, Get, Post, Param, Delete, UseGuards, Req, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
+import { isUUID } from 'class-validator';
 import { PieceJointesService } from './piece-jointes.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../auth/roles.decorator';
@@ -25,8 +26,8 @@ export class PieceJointesController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     if (!file) throw new BadRequestException('Fichier manquant')
-    const id_ticket = (req as any).body.id_ticket
-    if (!id_ticket) throw new BadRequestException('id_ticket manquant')
+    const id_ticket: string = (req as any).body.id_ticket
+    if (!id_ticket || !isUUID(id_ticket)) throw new BadRequestException('id_ticket invalide')
 
     return this.pieceJointesService.createForUser(req.user.userId, {
       id_piece_jointe: randomUUID(),

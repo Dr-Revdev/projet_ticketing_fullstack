@@ -6,6 +6,7 @@ import { ChangePasswordDto } from './dto/change-password.dto';
 import { Request } from 'express';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { UpdatePasswordDto } from './dto/update-password.dto';
+import { Public } from './public.decorator';
 
 
 @Controller('auth')
@@ -13,11 +14,13 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
+  @Public()
   create(@Body() dto: AuthDto) {
     return this.authService.login(dto.email, dto.password);
   }
 
   @Post('change-password')
+  @Public()
   @UseGuards(JwtResetGuard)
   changePassword(
     @Req() req: Request & { user: { userId: string } },

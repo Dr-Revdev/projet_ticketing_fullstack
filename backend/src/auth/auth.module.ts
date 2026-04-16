@@ -9,7 +9,6 @@ import type { StringValue } from 'ms';
 import { JwtStrategy } from './jwt.strategy';
 import { JwtResetStrategy } from './jwt-reset.strategy';
 import { UtilisateursRolesModule } from '../utilisateurs-roles/utilisateurs-roles.module';
-import { RolesGuard } from './roles.guard';
 
 @Module({
   imports: [
@@ -31,6 +30,6 @@ import { RolesGuard } from './roles.guard';
     })
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, JwtResetStrategy, RolesGuard],
+  providers: [AuthService, JwtStrategy, JwtResetStrategy],
 })
 export class AuthModule {}

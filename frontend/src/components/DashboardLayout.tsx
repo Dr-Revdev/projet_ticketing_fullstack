@@ -1,7 +1,7 @@
 import { Box, Drawer, List, ListItemButton, ListItemIcon, ListItemText, AppBar, Toolbar, Typography, IconButton, Avatar, useMediaQuery, useTheme, Divider } from '@mui/material'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { hasAtLeast } from '../utils/roles'
+import { hasAtLeast, getHighestRole } from '../utils/roles'
 import { useState } from 'react'
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import ConfirmationNumberIcon from '@mui/icons-material/ConfirmationNumber'
@@ -88,7 +88,7 @@ export default function DashboardLayout() {
                     </Avatar>
                     <Box>
                         <Typography variant='body2' fontWeight={600}>{user?.prenom} {user?.nom}</Typography>
-                        <Typography variant='caption' color='text.secondary'>{user?.utilisateurs_roles[0]?.roles.libelle}</Typography>
+                        <Typography variant='caption' color='text.secondary'>{user ? getHighestRole(user.utilisateurs_roles) : ''}</Typography>
                     </Box>
                 </Box>
                 <IconButton onClick={handleLogout} size='small' sx={{ color: 'text.secondary' }}>

@@ -19,6 +19,7 @@ export class HistoriqueActionsController {
   }
 
   @Get()
+  @Roles('admin')
   findAll() {
     return this.historiqueActionsService.findAll();
   }

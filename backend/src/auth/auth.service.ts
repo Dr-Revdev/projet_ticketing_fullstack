@@ -52,7 +52,7 @@ export class AuthService {
 
   async changePassword(userId: string, currentPassword: string, newPassword: string) {
     const user = await this.repo.findAuthById(userId);
-    if (!user) throw new UnauthorizedException('Utilisatieur introuvable');
+    if (!user) throw new UnauthorizedException('Utilisateur introuvable');
 
     const ok = await bcrypt.compare(currentPassword, user.password_hash);
     if (!ok) throw new UnauthorizedException('Mot de passe actuel incorrect');

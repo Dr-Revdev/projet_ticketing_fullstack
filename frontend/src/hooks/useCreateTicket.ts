@@ -16,6 +16,7 @@ export default function useCreateTicket() {
     const [description, setDescription] = useState('')
     const [categorie, setCategorie] = useState<Categorie[]>([])
     const [error, setError] = useState<string | null>(null)
+    const [warning, setWarning] = useState<string | null>(null)
     const [fichiers, setFichiers] = useState<File[]>([])
 
     useEffect(() => {
@@ -35,14 +36,20 @@ export default function useCreateTicket() {
                 id_categorie: idCategorie,
             })
 
-            await createMessage({
-                contenu: description,
-                visibilite: 'public',
-                id_ticket: ticket.id_ticket,
-            })
-
-            for (const fichier of fichiers) {
-                await uploadPieceJointe(ticket.id_ticket, fichier)
+            // Message et fichiers sont optionnels : un échec ne remet pas en cause le ticket créé.
+            try {
+                if (description.trim()) {
+                    await createMessage({
+                        contenu: description,
+                        visibilite: 'public',
+                        id_ticket: ticket.id_ticket,
+                    })
+                }
+                for (const fichier of fichiers) {
+                    await uploadPieceJointe(ticket.id_ticket, fichier)
+                }
+            } catch {
+                setWarning('Ticket créé, mais la description ou les fichiers n\'ont pas pu être envoyés.')
             }
 
             navigate('/tickets')
@@ -52,5 +59,5 @@ export default function useCreateTicket() {
     }
 
     return { titre, setTitre, idCategorie, setIdCategorie, description, setDescription,
-        fichiers, setFichiers, categorie, error, handleSubmit }
+        fichiers, setFichiers, categorie, error, warning, handleSubmit }
 }

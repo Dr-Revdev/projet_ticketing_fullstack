@@ -3,7 +3,7 @@ import useCreateTicket from '../hooks/useCreateTicket'
 
 export default function CreationTicketPage() {
     const { titre, setTitre, idCategorie, setIdCategorie, description, setDescription, categorie,
-        fichiers, setFichiers, error, handleSubmit } = useCreateTicket()
+        fichiers, setFichiers, error, warning, handleSubmit } = useCreateTicket()
 
     return (
         <Box component='form' onSubmit={handleSubmit} sx={{ maxWidth: 500, mx: 'auto' }}>
@@ -12,6 +12,7 @@ export default function CreationTicketPage() {
             </Typography>
 
             {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+            {warning && <Alert severity="warning" sx={{ mb: 2 }}>{warning}</Alert>}
 
             <TextField
                 label='Titre'

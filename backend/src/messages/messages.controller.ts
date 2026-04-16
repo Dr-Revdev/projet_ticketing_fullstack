@@ -4,7 +4,6 @@ import { CreateMessageDto } from './dto/create-message.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../auth/roles.decorator';
 import { Request } from 'express';
-// import { UpdateMessageDto } from './dto/update-message.dto';
 
 @Controller('messages')
 export class MessagesController {
