@@ -50,8 +50,8 @@ export class UtilisateursService {
     }
   }
 
-  findAll() {
-    return this.repo.findAll();
+  findAll(role?: string) {
+    return this.repo.findAll(role);
   }
 
   async findOne(id_utilisateur: string) {

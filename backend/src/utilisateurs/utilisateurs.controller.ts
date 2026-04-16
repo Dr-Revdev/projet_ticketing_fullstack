@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Req,
+  Query,
 } from '@nestjs/common';
 import { UtilisateursService } from './utilisateurs.service';
 import { CreateUtilisateurDto } from './dto/create-utilisateur.dto';
@@ -29,9 +30,9 @@ export class UtilisateursController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  @Roles('admin')
-  findAll() {
-    return this.utilisateursService.findAll();
+  @Roles('admin', 'manager')
+  findAll(@Query('role') role?: string) {
+    return this.utilisateursService.findAll(role);
   }
 
   @Get(':id')

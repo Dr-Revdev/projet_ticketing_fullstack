@@ -28,8 +28,11 @@ export class UtilisateurRepository {
     return this.prisma.utilisateurs.create({ data: data as Prisma.utilisateursCreateInput, select: utilisateurPublicSelect });
 }
 
-  findAll(): Promise<UtilisateurPublic[]> {
-    return this.prisma.utilisateurs.findMany({ select: utilisateurPublicSelect });
+  findAll(role?: string): Promise<UtilisateurPublic[]> {
+    const where = role
+      ? { utilisateurs_roles: { some: { roles: { libelle: role } } } }
+      : undefined;
+    return this.prisma.utilisateurs.findMany({ where, select: utilisateurPublicSelect });
   }
 
   findById(id_utilisateur: string): Promise<UtilisateurPublic | null> {

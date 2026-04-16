@@ -24,7 +24,7 @@ export default function useTicketDetail() {
 
         Promise.all([
             fetchTicket(id),
-            isManager ? fetchUtilisateurs() : Promise.resolve([]),
+            isManager ? fetchUtilisateurs('agent') : Promise.resolve([]),
         ]).then(([ticketData, utilisateursData]) => {
             setTicket(ticketData)
             setUtilisateurs(utilisateursData)

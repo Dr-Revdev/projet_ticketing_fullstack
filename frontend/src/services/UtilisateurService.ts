@@ -12,8 +12,9 @@ export type Utilisateur = {
     equipes: { nom: string }
 }
 
-export async function fetchUtilisateurs(): Promise<Utilisateur[]> {
-    return apiClient<Utilisateur[]>('/utilisateurs')
+export async function fetchUtilisateurs(role?: string): Promise<Utilisateur[]> {
+    const query = role ? `?role=${encodeURIComponent(role)}` : ''
+    return apiClient<Utilisateur[]>(`/utilisateurs${query}`)
 }
 
 export async function createUtilisateur(data: {
