@@ -1,7 +1,7 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { Prisma, tickets as TicketModel } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-import { CanonicalRole, ROLE_LEVEL, isCanonicalRole, maxRoleLevel } from '../auth/roles.utils';
+import { CanonicalRole, ROLE_LEVEL, maxRoleLevel } from '../auth/roles.utils';
 
 export type { CanonicalRole };
 
@@ -60,13 +60,7 @@ export class AccessService {
     }
 
     if (this.hasAtLeast(ctx, 'agent')) {
-      if (!ctx.equipeId) return { id_ticket: '__none__' };
-      return {
-        OR: [
-          { id_agent_assigne: ctx.userId },
-          { id_agent_assigne: null, categories: { id_equipe: ctx.equipeId } },
-        ],
-      };
+      return { id_agent_assigne: ctx.userId };
     }
 
     return { id_createur: ctx.userId };
@@ -106,10 +100,7 @@ export class AccessService {
     }
 
     if (this.hasAtLeast(ctx, 'agent')) {
-      if (!ctx.equipeId) return false;
-      if (ticket.id_agent_assigne === ctx.userId) return true;
-      if (ticket.id_agent_assigne == null && ticket.categories.id_equipe === ctx.equipeId) return true;
-      return false;
+      return ticket.id_agent_assigne === ctx.userId;
     }
 
     return ticket.id_createur === ctx.userId;
