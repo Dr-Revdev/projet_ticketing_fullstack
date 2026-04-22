@@ -13,9 +13,5 @@ export class CreateMessageDto {
 
     @IsString()
     @IsNotEmpty()
-    id_utilisateur!: string;
-
-    @IsString()
-    @IsNotEmpty()
     id_ticket!: string;
 }

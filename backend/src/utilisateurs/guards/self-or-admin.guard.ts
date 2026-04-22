@@ -1,5 +1,5 @@
 import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common';
-import { AccessService } from 'src/access/access.service';
+import { AccessService } from '../../access/access.service';
 
 @Injectable()
 export class SelfOrAdminGuard implements CanActivate {

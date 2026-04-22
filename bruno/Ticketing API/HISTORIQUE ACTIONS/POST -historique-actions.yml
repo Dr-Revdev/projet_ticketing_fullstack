@@ -1,0 +1,28 @@
+info:
+  name: POST /historique-actions
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/historique-actions"
+  body:
+    type: json
+    data: |-
+      {
+        "id_action": "{{actionId}}",
+        "type_action": "CREATION_TICKET",
+        "detail": "Création via Bruno",
+        "id_auteur": "{{userId}}",
+        "id_cible": "{{cibleId}}",
+        "id_ticket": "{{ticketId}}"
+      }
+  auth:
+    type: bearer
+    token: "{{accessToken}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -3,9 +3,9 @@ import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
 import { TicketRepository } from './tickets.repository';
 import { Prisma } from '@prisma/client';
-import { AccessService } from 'src/access/access.service';
+import { AccessService } from '../access/access.service';
 import { randomUUID } from 'node:crypto';
-import { HistoriqueActionsService } from 'src/historique-actions/historique-actions.service';
+import { HistoriqueActionsService } from '../historique-actions/historique-actions.service';
 
 @Injectable()
 export class TicketsService {
@@ -18,10 +18,6 @@ export class TicketsService {
   async createForUser(userId: string, dto: CreateTicketDto) {
     const ctx = await this.access.getUserContext(userId);
 
-    // Le créateur vient du JWT.
-    if (dto.id_createur && dto.id_createur !== userId) {
-      throw new ForbiddenException("id_createur ne peut pas être un autre utilisateur");
-    }
 
     // En v1 (README): création User+ mais sans assignation/résultat par un User.
     if (!this.access.hasAtLeast(ctx, 'agent')) {
@@ -41,8 +37,10 @@ export class TicketsService {
       }
     }
 
+    const id_ticket = randomUUID()
+
     const data: Prisma.ticketsCreateInput = {
-      id_ticket: randomUUID(),
+      id_ticket,
       titre: dto.titre,
       etat: dto.etat,
       resultat: dto.resultat,
@@ -60,18 +58,31 @@ export class TicketsService {
       };
     }
 
-    const ticket = await this.repo.create(data);
+    await this.repo.create(data);
 
     await this.historique.create({
-      id_action: randomUUID(),
       type_action: 'creation',
-      detail: ticket.titre,
+      detail: dto.titre,
       id_auteur: userId,
       id_cible: userId,
-      id_ticket: ticket.id_ticket,
+      id_ticket,
     })
 
-    return ticket;
+    // L'adaptateur MariaDB ne retourne pas l'enregistrement après create().
+    // categories.libelle est vide car non disponible sans refetch.
+    // Le frontend navigue vers /tickets et re-fetch la liste — cette valeur n'est jamais affichée.
+    return {
+      id_ticket,
+      titre: dto.titre,
+      etat: dto.etat,
+      resultat: dto.resultat ?? null,
+      archived_at: dto.archived_at ?? null,
+      id_createur: userId,
+      id_categorie: dto.id_categorie,
+      id_agent_assigne: dto.id_agent_assigne ?? null,
+      date_creation: new Date(),
+      categories: { libelle: '' },
+    };
   }
 
   async findAllForUser(userId: string, filters: { etat?: string, id_categorie?: string, titre?: string } = {}) {
@@ -85,7 +96,7 @@ export class TicketsService {
     if (filters.id_categorie) where.id_categorie = filters.id_categorie
     if (filters.titre) where.titre = { contains: filters.titre }
 
-    return this.repo.findMany({ 
+    return this.repo.findMany({
       where,
       include: { categories: { select: { libelle: true } } }
     });
@@ -96,7 +107,7 @@ export class TicketsService {
     await this.access.assertCanReadTicket(ctx, id_ticket);
 
     const ticket = await this.repo.findByIdWith({
-      where: {id_ticket},
+      where: { id_ticket },
       include: { categories: { select: { libelle: true } } }
     });
     if (!ticket) throw new NotFoundException('Ticket non trouvé');
@@ -118,13 +129,13 @@ export class TicketsService {
       resultat: dto.resultat !== undefined,
       archived_at: dto.archived_at !== undefined,
       id_categorie: dto.id_categorie !== undefined,
-      id_createur: dto.id_createur !== undefined,
       id_agent_assigne: dto.id_agent_assigne !== undefined,
+      id_createur: dto.id_createur !== undefined,
     };
 
     if (!this.access.hasAtLeast(ctx, 'agent')) {
       // User: aucune modif sauf fermeture (etat=ferme) sous conditions.
-      const anyOther = touches.titre || touches.resultat || touches.archived_at || touches.id_categorie || touches.id_createur || touches.id_agent_assigne;
+      const anyOther = touches.titre || touches.resultat || touches.archived_at || touches.id_categorie || touches.id_agent_assigne;
       if (anyOther) throw new ForbiddenException('Un User ne peut pas modifier un ticket (hors fermeture)');
       if (!touches.etat || dto.etat !== 'ferme') {
         throw new ForbiddenException('Un User ne peut que fermer un ticket (etat=ferme)');
@@ -138,11 +149,11 @@ export class TicketsService {
       if (touches.id_agent_assigne && !this.access.hasAtLeast(ctx, 'manager')) {
         throw new ForbiddenException('Assignation/désassignation réservée à Manager+');
       }
-      if ((touches.id_categorie || touches.titre) && !this.access.hasAtLeast(ctx, 'manager')) {
-        throw new ForbiddenException('Modification titre/catégorie réservée à Manager+');
-      }
       if (touches.id_createur && !this.access.hasAtLeast(ctx, 'admin')) {
         throw new ForbiddenException('Changement de créateur réservé à Admin');
+      }
+      if ((touches.id_categorie || touches.titre) && !this.access.hasAtLeast(ctx, 'manager')) {
+        throw new ForbiddenException('Modification titre/catégorie réservée à Manager+');
       }
     }
 
@@ -164,6 +175,7 @@ export class TicketsService {
         };
       }
 
+
       if (dto.id_agent_assigne === null) {
         data.utilisateurs_tickets_id_agent_assigneToutilisateurs = {
           disconnect: true,
@@ -178,7 +190,6 @@ export class TicketsService {
 
       if (touches.etat) {
         await this.historique.create({
-          id_action: randomUUID(),
           type_action: 'changement_etat',
           detail: `${ticketAccess.etat} -> ${dto.etat}`,
           id_auteur: userId,
@@ -189,7 +200,6 @@ export class TicketsService {
 
       if (touches.id_agent_assigne) {
         await this.historique.create({
-          id_action: randomUUID(),
           type_action: 'assignation',
           detail: dto.id_agent_assigne ?? 'désassigné',
           id_auteur: userId,

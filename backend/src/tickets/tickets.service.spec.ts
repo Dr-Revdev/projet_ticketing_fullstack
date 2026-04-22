@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TicketsService } from './tickets.service';
 import { TicketRepository } from './tickets.repository';
-import { AccessService } from 'src/access/access.service';
-import { HistoriqueActionsService } from 'src/historique-actions/historique-actions.service';
+import { AccessService } from '../access/access.service';
+import { HistoriqueActionsService } from '../historique-actions/historique-actions.service';
 
 
 describe('TicketsService', () => {

@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
 import { HistoriqueActionsService } from './historique-actions.service';
 import { CreateHistoriqueActionDto } from './dto/create-historique-action.dto';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { Roles } from 'src/auth/roles.decorator';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Roles } from '../auth/roles.decorator';
 
 @Controller('historique-actions')
 @UseGuards(JwtAuthGuard)
@@ -19,6 +19,7 @@ export class HistoriqueActionsController {
   }
 
   @Get()
+  @Roles('admin')
   findAll() {
     return this.historiqueActionsService.findAll();
   }

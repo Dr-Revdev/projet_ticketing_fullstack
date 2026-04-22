@@ -1,0 +1,23 @@
+info:
+  name: PATCH /equipes/:id
+  type: http
+  seq: 4
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/equipes/{{equipeId}}"
+  body:
+    type: json
+    data: |-
+      {
+        "nom": "Equipe Test Bruno Modifiee"
+      }
+  auth:
+    type: bearer
+    token: "{{accessToken}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

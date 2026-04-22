@@ -1,0 +1,23 @@
+info:
+  name: PATCH /tickets/:id
+  type: http
+  seq: 4
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/tickets/{{ticketId}}"
+  body:
+    type: json
+    data: |-
+      {
+        "etat": "en_cours"
+      }
+  auth:
+    type: bearer
+    token: "{{accessToken}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

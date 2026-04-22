@@ -1,0 +1,24 @@
+info:
+  name: POST /categories
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/categories"
+  body:
+    type: json
+    data: |-
+      {
+        "libelle": "Catégorie test Bruno",
+        "id_equipe": "{{equipeId}}"
+      }
+  auth:
+    type: bearer
+    token: "{{accessToken}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

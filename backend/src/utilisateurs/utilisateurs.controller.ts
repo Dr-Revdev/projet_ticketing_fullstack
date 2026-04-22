@@ -7,12 +7,14 @@ import {
   Param,
   Delete,
   UseGuards,
+  Req,
+  Query,
 } from '@nestjs/common';
 import { UtilisateursService } from './utilisateurs.service';
 import { CreateUtilisateurDto } from './dto/create-utilisateur.dto';
 import { UpdateUtilisateurDto } from './dto/update-utilisateur.dto';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { Roles } from 'src/auth/roles.decorator';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Roles } from '../auth/roles.decorator';
 import { SelfOrAdminGuard } from './guards/self-or-admin.guard';
 
 @Controller('utilisateurs')
@@ -28,9 +30,9 @@ export class UtilisateursController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  @Roles('admin')
-  findAll() {
-    return this.utilisateursService.findAll();
+  @Roles('admin', 'manager')
+  findAll(@Query('role') role?: string) {
+    return this.utilisateursService.findAll(role);
   }
 
   @Get(':id')
@@ -42,10 +44,12 @@ export class UtilisateursController {
   @Patch(':id')
   @UseGuards(JwtAuthGuard, SelfOrAdminGuard)
   update(
+    @Req() req: Request & { user: { userId: string } },
     @Param('id') id_utilisateur: string,
     @Body() updateUtilisateurDto: UpdateUtilisateurDto,
   ) {
     return this.utilisateursService.update(
+      req.user.userId,
       id_utilisateur,
       updateUtilisateurDto,
     );

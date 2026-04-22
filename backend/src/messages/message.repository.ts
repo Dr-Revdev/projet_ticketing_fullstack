@@ -6,7 +6,7 @@ import { PrismaService } from '../prisma/prisma.service';
 export class MessageRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  create(data: Prisma.messagesCreateInput): Promise<MessageModel> {
+  create(data: Prisma.messagesUncheckedCreateInput): Promise<MessageModel> {
     return this.prisma.messages.create({ data });
   }
 

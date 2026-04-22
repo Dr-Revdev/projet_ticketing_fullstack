@@ -1,9 +1,10 @@
 import { useState } from "react";
 import type { SubmitEvent } from "react";
 import { updatePassword } from "../services/AuthService";
+import { useAuth } from "../contexts/AuthContext";
 
-export default function UserProfile() {
-    const token = localStorage.getItem('access_token')
+export default function useProfil() {
+    const { user } = useAuth()
 
     const [currentPassword, setCurrentPassword] = useState('')
     const [newPassword, setNewPassword] = useState('')
@@ -22,7 +23,7 @@ export default function UserProfile() {
         }
 
         try {
-            await updatePassword(token!, currentPassword, newPassword)
+            await updatePassword(currentPassword, newPassword)
             setSuccess(true)
             setCurrentPassword('')
             setNewPassword('')
@@ -33,6 +34,6 @@ export default function UserProfile() {
     }
 
     return { currentPassword, setCurrentPassword, newPassword, setNewPassword,
-        confirmPassword, setConfirmPassword, error, success, handleSubmit,
+        confirmPassword, setConfirmPassword, error, success, handleSubmit, user
     }
 }

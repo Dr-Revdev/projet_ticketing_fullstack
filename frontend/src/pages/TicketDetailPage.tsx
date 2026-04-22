@@ -1,16 +1,11 @@
 import { Box, Typography, Chip, Paper, CircularProgress, Alert, TextField, Button, MenuItem } from '@mui/material'
 import { List, ListItem, ListItemText, Link } from '@mui/material';
+import { useState, useEffect } from 'react'
 import useTicketDetail from '../hooks/useTicketDetail'
 import useTicketMessages from '../hooks/useTicketMessages'
 import usePiecesJointes from '../hooks/usePiecesJointes'
 
-const etatColors: Record<string, 'default' | 'info' | 'warning' | 'success' | 'error'> = {
-    nouveau: 'info',
-    en_cours: 'warning',
-    en_attente: 'default',
-    resolu: 'success',
-    ferme: 'error',
-}
+import { etatColors } from '../utils/tickets'
 
 const etats = [ 'nouveau', 'en_cours', 'en_attente', 'resolu', 'ferme' ]
 
@@ -18,6 +13,28 @@ export default function TicketDetailPage() {
     const { ticket, utilisateurs, loading, error, handleUpdate, isAgent, isManager } = useTicketDetail()
     const { messages, contenu, setContenu, error: msgError, handleSend } = useTicketMessages(ticket?.id_ticket)
     const { piecesJointes, error: pjError, handleUpload } = usePiecesJointes(ticket?.id_ticket)
+
+    const [pendingEtat, setPendingEtat] = useState('')
+    const [pendingAgent, setPendingAgent] = useState<string | null>(null)
+
+    useEffect(() => {
+        if (ticket) {
+            setPendingEtat(ticket.etat)
+            setPendingAgent(ticket.id_agent_assigne ?? null)
+        }
+    }, [ticket?.id_ticket])
+
+    const hasChanges = ticket
+        ? pendingEtat !== ticket.etat || pendingAgent !== (ticket.id_agent_assigne ?? null)
+        : false
+
+    const handleSave = () => {
+        if (!hasChanges) return
+        const patch: Record<string, unknown> = {}
+        if (pendingEtat !== ticket!.etat) patch.etat = pendingEtat
+        if (pendingAgent !== (ticket!.id_agent_assigne ?? null)) patch.id_agent_assigne = pendingAgent
+        handleUpdate(patch)
+    }
 
     if (loading) return <CircularProgress />
     if (error) return <Typography color='error'>{error}</Typography>
@@ -34,8 +51,8 @@ export default function TicketDetailPage() {
                     <Box>
                         <Typography variant='subtitle2' color='text.secondary'>État</Typography>
                         <TextField
-                            value={ticket.etat}
-                            onChange={e => handleUpdate({ etat: e.target.value })}
+                            value={pendingEtat}
+                            onChange={e => setPendingEtat(e.target.value)}
                             select
                             size='small'
                             sx={{ minWidth: 200 }}
@@ -56,8 +73,8 @@ export default function TicketDetailPage() {
                     <Box>
                         <Typography variant='subtitle2' color='text.secondary'>Agent assigné</Typography>
                         <TextField
-                            value={ticket.id_agent_assigne ?? ''}
-                            onChange={e => handleUpdate({ id_agent_assigne: e.target.value || null })}
+                            value={pendingAgent ?? ''}
+                            onChange={e => setPendingAgent(e.target.value || null)}
                             select
                             size='small'
                             sx={{ minWidth: 200 }}
@@ -73,6 +90,19 @@ export default function TicketDetailPage() {
                             ))}
                         </TextField>
                     </Box>
+
+                    {(isAgent || isManager) && (
+                        <Box>
+                            <Button
+                                variant='contained'
+                                size='small'
+                                onClick={handleSave}
+                                disabled={!hasChanges}
+                            >
+                                Sauvegarder
+                            </Button>
+                        </Box>
+                    )}
 
                     <Box>
                         <Typography variant='subtitle2' color='text.secondary'>Date de création</Typography>

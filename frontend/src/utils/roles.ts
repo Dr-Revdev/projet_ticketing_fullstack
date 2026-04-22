@@ -11,3 +11,8 @@ export function getRoleLevel(utilisateurs_roles: UserRole[]): number {
 export function hasAtLeast(utilisateurs_roles: UserRole[], minRole: string): boolean {
     return getRoleLevel(utilisateurs_roles) >= (ROLE_LEVEL[minRole] ?? 0)
 }
+
+export function getHighestRole(utilisateurs_roles: UserRole[]): string {
+    const level = getRoleLevel(utilisateurs_roles)
+    return Object.entries(ROLE_LEVEL).find(([, v]) => v === level)?.[0] ?? 'user'
+}

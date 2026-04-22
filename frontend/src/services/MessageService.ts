@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL
+import { apiClient } from "./apiClient"
 
 export type Message = {
     id_message: string
@@ -15,33 +15,16 @@ export type Message = {
 }
 
 export async function fetchMessages(idTicket: string): Promise<Message[]> {
-    const token = localStorage.getItem('access_token')
-
-    const reponse = await fetch(`${API_URL}/messages?id_ticket=${idTicket}`, {
-        headers: { Authorization: `Bearer ${token}`}
-    })
-
-    if (!reponse.ok) throw new Error('Impossible de récupérer les messages')
-    return reponse.json()
+    return apiClient<Message[]>(`/messages?id_ticket=${idTicket}`)
 }
 
 export async function createMessage(data:{
     contenu: string
     visibilite: string
-    id_utilisateur: string
     id_ticket: string
 }): Promise<Message> {
-    const token = localStorage.getItem('access_token')
-
-    const reponse = await fetch(`${API_URL}/messages`, {
+    return apiClient<Message>('/messages', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-        },
         body: JSON.stringify(data),
     })
-
-    if (!reponse.ok) throw new Error("Impossible d'envoyer le message")
-    return reponse.json()
 }

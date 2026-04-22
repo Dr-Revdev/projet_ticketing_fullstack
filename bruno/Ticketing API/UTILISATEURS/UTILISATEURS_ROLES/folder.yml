@@ -1,0 +1,7 @@
+info:
+  name: UTILISATEURS_ROLES
+  type: folder
+  seq: 6
+
+request:
+  auth: inherit

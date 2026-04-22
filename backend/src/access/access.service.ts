@@ -1,29 +1,10 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { Prisma, tickets as TicketModel } from '@prisma/client';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
+import { CanonicalRole, ROLE_LEVEL, maxRoleLevel } from '../auth/roles.utils';
 
-export type CanonicalRole = 'user' | 'agent' | 'manager' | 'admin';
+export type { CanonicalRole };
 
-const ROLE_LEVEL: Record<CanonicalRole, number> = {
-  user: 0,
-  agent: 1,
-  manager: 2,
-  admin: 3,
-};
-
-function isCanonicalRole(value: string): value is CanonicalRole {
-  return value === 'user' || value === 'agent' || value === 'manager' || value === 'admin';
-}
-
-function maxRoleLevel(roleIds: string[]): number {
-  let max = ROLE_LEVEL.user;
-  for (const roleId of roleIds) {
-    if (!isCanonicalRole(roleId)) continue;
-    const lvl = ROLE_LEVEL[roleId];
-    if (lvl > max) max = lvl;
-  }
-  return max;
-}
 
 export interface UserAccessContext {
   userId: string;
@@ -79,13 +60,7 @@ export class AccessService {
     }
 
     if (this.hasAtLeast(ctx, 'agent')) {
-      if (!ctx.equipeId) return { id_ticket: '__none__' };
-      return {
-        OR: [
-          { id_agent_assigne: ctx.userId },
-          { id_agent_assigne: null, categories: { id_equipe: ctx.equipeId } },
-        ],
-      };
+      return { id_agent_assigne: ctx.userId };
     }
 
     return { id_createur: ctx.userId };
@@ -125,10 +100,7 @@ export class AccessService {
     }
 
     if (this.hasAtLeast(ctx, 'agent')) {
-      if (!ctx.equipeId) return false;
-      if (ticket.id_agent_assigne === ctx.userId) return true;
-      if (ticket.id_agent_assigne == null && ticket.categories.id_equipe === ctx.equipeId) return true;
-      return false;
+      return ticket.id_agent_assigne === ctx.userId;
     }
 
     return ticket.id_createur === ctx.userId;

@@ -1,11 +1,7 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateCategoryDto {
-  @IsString()
-  @IsNotEmpty()
-  id_categorie!: string;
-
-  @IsString()
+@IsString()
   @IsNotEmpty()
   libelle!: string;
 

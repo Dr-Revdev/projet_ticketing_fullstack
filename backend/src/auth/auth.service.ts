@@ -1,6 +1,6 @@
 import * as bcrypt from 'bcrypt'
 import { ForbiddenException, Injectable, UnauthorizedException } from "@nestjs/common";
-import { UtilisateurRepository } from 'src/utilisateurs/utilisateurs.repository';
+import { UtilisateurRepository } from '../utilisateurs/utilisateurs.repository';
 import { JwtService } from '@nestjs/jwt';
 
 
@@ -52,7 +52,7 @@ export class AuthService {
 
   async changePassword(userId: string, currentPassword: string, newPassword: string) {
     const user = await this.repo.findAuthById(userId);
-    if (!user) throw new UnauthorizedException('Utilisatieur introuvable');
+    if (!user) throw new UnauthorizedException('Utilisateur introuvable');
 
     const ok = await bcrypt.compare(currentPassword, user.password_hash);
     if (!ok) throw new UnauthorizedException('Mot de passe actuel incorrect');

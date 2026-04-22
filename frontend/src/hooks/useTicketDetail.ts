@@ -24,16 +24,14 @@ export default function useTicketDetail() {
 
         Promise.all([
             fetchTicket(id),
-            fetchUtilisateurs(),
+            isManager ? fetchUtilisateurs('agent') : Promise.resolve([]),
         ]).then(([ticketData, utilisateursData]) => {
             setTicket(ticketData)
             setUtilisateurs(utilisateursData)
         })
         .catch(err => setError(err.message))
         .finally(() => setLoading(false))
-
-        
-    }, [id])
+    }, [id, isManager])
 
     const handleUpdate = async (data: Partial<Ticket>) => {
         if (!id) return

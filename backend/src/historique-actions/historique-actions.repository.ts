@@ -10,7 +10,7 @@ export class HistoriqueActionRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   create(
-    data: Prisma.historiqueactionsCreateInput,
+    data: Prisma.historiqueactionsUncheckedCreateInput,
   ): Promise<HistoriqueActionModel> {
     return this.prisma.historiqueactions.create({ data });
   }

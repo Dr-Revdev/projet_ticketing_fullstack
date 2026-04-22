@@ -26,10 +26,11 @@ function App() {
             <Route path='/tickets' element={<TicketsPage />} />
             <Route path='/tickets/new' element={<CreateTicketPage />} />
             <Route path='/tickets/:id' element={<TicketDetailPage />} />
-            <Route path='/utilisateurs' element={<UtilisateursPage />} />
+            <Route path='/utilisateurs' element={<ProtectedRoute minRole='admin'><UtilisateursPage /></ProtectedRoute>} />
             <Route path='/profil' element={<ProfilPage />} />
           </Route>
 
+          <Route path='/' element={<Navigate to='/dashboard' replace />} />
           <Route path='*' element={<Navigate to='/dashboard' replace />} />
         </Routes>
       </BrowserRouter>

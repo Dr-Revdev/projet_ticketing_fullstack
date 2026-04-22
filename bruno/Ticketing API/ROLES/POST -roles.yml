@@ -1,0 +1,23 @@
+info:
+  name: POST /roles
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/roles"
+  body:
+    type: json
+    data: |-
+      {
+        "libelle": "{{roleLibelle}}"
+      }
+  auth:
+    type: bearer
+    token: "{{accessToken}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

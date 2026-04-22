@@ -10,18 +10,10 @@ export class TicketRepository {
     return this.prisma.tickets.create({ data });
   }
 
-  findAll(): Promise<TicketModel[]> {
-    return this.prisma.tickets.findMany();
-  }
-
   findMany<T extends Prisma.ticketsFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.ticketsFindManyArgs>,
   ) {
     return this.prisma.tickets.findMany(args);
-  }
-
-  findById(id_ticket: string): Promise<TicketModel | null> {
-    return this.prisma.tickets.findUnique({ where: { id_ticket } });
   }
 
   findByIdWith<T extends Prisma.ticketsFindUniqueArgs>(

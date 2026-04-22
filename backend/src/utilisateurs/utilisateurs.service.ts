@@ -1,33 +1,57 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { CreateUtilisateurDto } from './dto/create-utilisateur.dto';
 import { UpdateUtilisateurDto } from './dto/update-utilisateur.dto';
-import { UtilisateurRepository } from './utilisateurs.repository';
+import { UtilisateurRepository, UtilisateurPublic } from './utilisateurs.repository';
 import { Prisma } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { randomUUID } from 'node:crypto';
+import { AccessService } from '../access/access.service';
 
 @Injectable()
 export class UtilisateursService {
-  constructor(private readonly repo: UtilisateurRepository) { }
+  constructor(
+    private readonly repo: UtilisateurRepository,
+    private readonly access: AccessService,
+  ) { }
 
   async create(dto: CreateUtilisateurDto) {
-    const password_hash = await bcrypt.hash(dto.password, 10)
+    try {
+      const password_hash = await bcrypt.hash(dto.password, 10)
+      const id_utilisateur = randomUUID()
 
-    const data: Prisma.utilisateursCreateInput = {
-      id_utilisateur: randomUUID(),
-      nom: dto.nom,
-      prenom: dto.prenom,
-      email: dto.email,
-      password_hash,
-      equipes: {
-        connect: { id_equipe: dto.id_equipe },
-      },
-    };
-    return this.repo.create(data);
+      const data: Prisma.utilisateursUncheckedCreateInput = {
+        id_utilisateur,
+        nom: dto.nom,
+        prenom: dto.prenom,
+        email: dto.email,
+        password_hash,
+        id_equipe: dto.id_equipe,
+      };
+      await this.repo.create(data);
+      const result: UtilisateurPublic = {
+        id_utilisateur,
+        nom: dto.nom,
+        prenom: dto.prenom,
+        email: dto.email,
+        id_equipe: dto.id_equipe,
+        derniere_connexion: null,
+        utilisateurs_roles: [],
+        equipes: { nom: '' },
+      };
+
+      // L'adaptateur MariaDB ne retourne pas l'enregistrement après create().
+      // equipes.nom et utilisateurs_roles sont vides car non disponibles sans refetch.
+      // Le frontend appelle fetchUtilisateurs() immédiatement après — ces valeurs ne sont jamais affichées.
+      return result;
+    } catch (err) {
+      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002')
+        throw new ConflictException('Cet email est déjà utilisé');
+      throw err;
+    }
   }
 
-  findAll() {
-    return this.repo.findAll();
+  findAll(role?: string) {
+    return this.repo.findAll(role);
   }
 
   async findOne(id_utilisateur: string) {
@@ -36,30 +60,25 @@ export class UtilisateursService {
     return utilisateur;
   }
 
-  async update(id_utilisateur: string, dto: UpdateUtilisateurDto) {
+  async update(requesterId: string, id_utilisateur: string, dto: UpdateUtilisateurDto) {
     try {
       const data: Prisma.utilisateursUpdateInput = {};
+
+      if (dto.id_equipe !== undefined) {
+        const ctx = await this.access.getUserContext(requesterId);
+        if (!this.access.isAdmin(ctx)) throw new ForbiddenException("Modification de l'équipe réservée à un admin");
+        data.equipes = { connect: { id_equipe: dto.id_equipe } };
+      }
 
       if (dto.nom !== undefined) data.nom = dto.nom;
       if (dto.prenom !== undefined) data.prenom = dto.prenom;
       if (dto.email !== undefined) data.email = dto.email;
 
-      if (dto.password !== undefined) {
-        data.password_hash = await bcrypt.hash(dto.password, 10);
-        data.password_changed_at = new Date();
-      }
-
-      if (dto.id_equipe !== undefined) {
-        data.equipes = { connect: { id_equipe: dto.id_equipe } };
-      }
-
       return await this.repo.updateById(id_utilisateur, data);
     } catch (err) {
-      if (
-        err instanceof Prisma.PrismaClientKnownRequestError &&
-        err.code === 'P2025'
-      ) {
-        throw new NotFoundException('Utilisateur non trouvé');
+      if (err instanceof Prisma.PrismaClientKnownRequestError) {
+        if (err.code === 'P2025') throw new NotFoundException('Utilisateur non trouvé');
+        if (err.code === 'P2002') throw new ConflictException('Cet email est déjà utilisé');
       }
       throw err;
     }
@@ -73,7 +92,7 @@ export class UtilisateursService {
         err instanceof Prisma.PrismaClientKnownRequestError &&
         err.code === 'P2025'
       ) {
-        throw new NotFoundException('Utilistateur non trouvé');
+        throw new NotFoundException('Utilisateur non trouvé');
       }
       throw err;
     }

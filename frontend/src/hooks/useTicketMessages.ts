@@ -25,7 +25,6 @@ export default function useTicketMessage(idTicket: string | undefined) {
             const nouveau = await createMessage({
                 contenu,
                 visibilite: 'public',
-                id_utilisateur: user.id_utilisateur,
                 id_ticket: idTicket,
             })
             setMessages(prev => [...prev, nouveau])

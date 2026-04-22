@@ -3,13 +3,21 @@ import { CreateEquipeDto } from './dto/create-equipe.dto';
 import { UpdateEquipeDto } from './dto/update-equipe.dto';
 import { EquipeRepository } from './equipes.repository';
 import { Prisma } from '@prisma/client';
+import { randomUUID } from 'node:crypto';
+import { ConflictException } from '@nestjs/common';
 
 @Injectable()
 export class EquipesService {
   constructor(private readonly repo: EquipeRepository) {}
 
-  create(dto: CreateEquipeDto) {
-    return this.repo.create(dto);
+  async create(dto: CreateEquipeDto) {
+      try {
+          return await this.repo.create({ id_equipe: randomUUID(), ...dto });
+      } catch (err) {
+          if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002')
+              throw new ConflictException('Ce nom existe déjà');
+          throw err;
+      }
   }
 
   findAll() {

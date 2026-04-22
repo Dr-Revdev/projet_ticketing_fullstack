@@ -2,13 +2,7 @@ import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead
 import { useNavigate } from 'react-router-dom'
 import useTickets from '../hooks/useTickets'
 
-const etatColors: Record<string, 'default' | 'info' | 'warning' | 'success' | 'error'> = {
-    nouveau: 'info',
-    en_cours: 'warning',
-    en_attente: 'default',
-    resolu: 'success',
-    ferme: 'error',
-}
+import { etatColors } from '../utils/tickets';
 
 const etats = ['', 'nouveau', 'en_cours', 'en_attente', 'resolu', 'ferme']
 

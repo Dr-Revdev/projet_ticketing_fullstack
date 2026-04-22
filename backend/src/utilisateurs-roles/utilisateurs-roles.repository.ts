@@ -7,9 +7,9 @@ export class UtilisateursRolesRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   assign(id_utilisateur: string, id_role: string): Promise<UserRoleModel> {
-    const data: Prisma.utilisateurs_rolesCreateInput = {
-      utilisateurs: { connect: { id_utilisateur } },
-      roles: { connect: { id_role } },
+    const data: Prisma.utilisateurs_rolesUncheckedCreateInput = {
+      id_utilisateur,
+      id_role,
     };
 
     return this.prisma.utilisateurs_roles.create({ data });

@@ -1,0 +1,47 @@
+name: local
+color: "#346AB2"
+variables:
+  - name: baseUrl
+    value: http://localhost:3000
+  - name: loginEmail
+    value: test.bruno@test.fr
+  - secret: true
+    name: loginPassword
+  - secret: true
+    name: resetToken
+  - secret: true
+    name: newPassword
+  - secret: true
+    name: accessToken
+  - name: categorieId
+    value: 06c64f76-ea2b-4204-87c4-8760412f803c
+  - name: equipeId
+    value: 2791e559-a098-4744-81a7-050059b513cd
+  - name: equipeNom
+    value: Equipe Test Bruno
+  - name: roleId
+    value: role-user
+  - name: roleLibelle
+    value: user
+  - name: newUserNom
+    value: Dupont
+  - name: newUserPrenom
+    value: Jean
+  - name: newUserEmail
+    value: jean.dupont.bruno@test.fr
+  - secret: true
+    name: newUserPassword
+  - name: userId
+    value: 6ef16516-a9cc-406f-a8b4-ec9728709c5e
+  - name: ticketId
+    value: 70347c5b-5067-4b35-b4bd-119e4db21409
+  - name: messageId
+    value: 3356d630-c851-4b5c-852f-e60eb0363a19
+  - name: pieceJointeId
+    value: abcb0211-dcb8-4f1d-b193-adceff68d176
+  - name: historiqueId
+    value: ""
+  - name: actionId
+    value: ""
+  - name: cibleId
+    value: ""

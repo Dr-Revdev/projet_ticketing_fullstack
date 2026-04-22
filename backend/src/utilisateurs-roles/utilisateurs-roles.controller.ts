@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Body, Param, Delete, UseGuards } from '@nestjs/common';
 import { UtilisateursRolesService } from './utilisateurs-roles.service';
 import { CreateUtilisateursRoleDto } from './dto/create-utilisateurs-role.dto';
-import { Roles } from 'src/auth/roles.decorator';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { Roles } from '../auth/roles.decorator';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('utilisateurs')
 export class UtilisateursRolesController {

@@ -1,4 +1,6 @@
-const API_URL = import.meta.env.VITE_API_URL
+import { apiClient } from "./apiClient"
+
+
 
 export type PieceJointe = {
     id_piece_jointe: string
@@ -8,15 +10,11 @@ export type PieceJointe = {
 }
 
 export async function fetchPieceJointes(id_ticket: string):Promise<PieceJointe[]> {
-    const token = localStorage.getItem('access_token')
-    const reponse = await fetch(`${API_URL}/piece-jointes/${id_ticket}`, {
-        headers: { Authorization: `Bearer ${token}`}
-    })
-    if (!reponse.ok) throw new Error('Impossible de récupérer les pièces jointes')
-        return reponse.json()
+    return apiClient<PieceJointe[]>(`/piece-jointes/${id_ticket}`)
 }
 
 export async function uploadPieceJointe(id_ticket: string, file: File): Promise<PieceJointe> {
+    const API_URL = import.meta.env.VITE_API_URL
     const token = localStorage.getItem('access_token')
     const formData = new FormData()
     formData.append('file', file)

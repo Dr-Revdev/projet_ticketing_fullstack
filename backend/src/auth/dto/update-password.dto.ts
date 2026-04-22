@@ -2,9 +2,9 @@ import { IsString, MinLength } from "class-validator";
 
 export class UpdatePasswordDto {
     @IsString()
-    currentPassword: string;
+    currentPassword!: string;
     
     @IsString()
     @MinLength(12)
-    newPassword: string;
+    newPassword!: string;
 }

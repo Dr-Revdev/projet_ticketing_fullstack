@@ -1,0 +1,23 @@
+info:
+  name: POST /utilisateurs/:id/roles
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{baseUrl}}/utilisateurs/{{userId}}/roles"
+  body:
+    type: json
+    data: |-
+      {
+        "id_role": "{{roleId}}"
+      }
+  auth:
+    type: bearer
+    token: "{{accessToken}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
