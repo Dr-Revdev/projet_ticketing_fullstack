@@ -5,7 +5,7 @@ Projet réalisé dans le cadre du BTS SIO.
 
 ## Problématique
 
-Une entreprise souhaite centraliser ses demandes de support informatique au sein d’une application unique.
+Une entreprise souhaite centraliser ses demandes de support informatique au sein d'une application unique.
 
 Les besoins identifiés sont les suivants :
 - gérer les utilisateurs et leurs rôles ;
@@ -43,9 +43,9 @@ Les besoins identifiés sont les suivants :
 - **React** a été utilisé pour construire une interface dynamique, modulaire et réactive.
 - **TypeScript** permet de renforcer la fiabilité du code grâce au typage statique.
 - **NestJS** a été choisi pour structurer le backend de manière claire, avec une séparation propre entre les contrôleurs, les services et les modules.
-- **Prisma** facilite l’accès à la base de données ainsi que la gestion des modèles et des relations.
-- **JWT** permet de sécuriser l’authentification des utilisateurs et l’accès aux routes protégées.
-- **MySQL** assure le stockage structuré des données de l’application.
+- **Prisma** facilite l'accès à la base de données ainsi que la gestion des modèles et des relations.
+- **JWT** permet de sécuriser l'authentification des utilisateurs et l'accès aux routes protégées.
+- **MySQL** assure le stockage structuré des données de l'application.
 
 ## Installation
 
@@ -80,7 +80,7 @@ npm install
 
 4. Configurer les fichiers `.env` du frontend et du backend à partir des fichiers `.env.example`.
 
-5. Créer et initialiser la base de données MySQL à l’aide de l’extraction SQL fournie.
+5. Créer et initialiser la base de données MySQL à l'aide de l'extraction SQL fournie.
 
 6. Lancer le backend :
 
@@ -103,12 +103,12 @@ Ces fichiers doivent être créés à partir des modèles fournis dans les fichi
 
 ## Utilisation
 
-Une fois l’application démarrée, il est possible de :
+Une fois l'application démarrée, il est possible de :
 - se connecter avec un compte utilisateur ;
 - créer une demande de support ;
 - attribuer un ticket à un agent ;
-- mettre à jour l’état d’avancement d’un ticket ;
-- consulter l’historique des actions ;
+- mettre à jour l'état d'avancement d'un ticket ;
+- consulter l'historique des actions ;
 - échanger via le système de messages associé au ticket.
 
 ## Structure du projet
@@ -127,14 +127,14 @@ projetTicket/
 
 ## Organisation technique
 
-- `backend/` : contient l’API, la logique métier, les contrôleurs, les services et la configuration Prisma
-- `frontend/` : contient l’interface utilisateur développée avec React
+- `backend/` : contient l'API, la logique métier, les contrôleurs, les services et la configuration Prisma
+- `frontend/` : contient l'interface utilisateur développée avec React
 - `bruno/` : contient la collection de tests API
-- `backend/prisma/` : contient le schéma de base de données et les éléments liés à l’ORM
+- `backend/prisma/` : contient le schéma de base de données et les éléments liés à l'ORM
 
 ## Tests
 
-Les routes de l’API ont été testées à l’aide de **Bruno**.  
+Les routes de l'API ont été testées à l'aide de **Bruno**.  
 La collection de requêtes est disponible dans le dossier `bruno/`.
 
 ## Limites actuelles
@@ -144,13 +144,13 @@ La collection de requêtes est disponible dans le dossier `bruno/`.
 - Pas de distinction entre messages publics et messages internes
 - Gestion des erreurs encore perfectible
 
-## Pistes d’amélioration
+## Pistes d'amélioration
 
 - Mise en place de notifications par e-mail
-- Ajout de tests unitaires et de tests d’intégration
-- Mise en place d’une chaîne CI/CD
+- Ajout de tests unitaires et de tests d'intégration
+- Mise en place d'une chaîne CI/CD
 - Amélioration de la gestion des erreurs
-- Ajout d’une meilleure gestion de la confidentialité des échanges
+- Ajout d'une meilleure gestion de la confidentialité des échanges
 
 ## Auteur
 

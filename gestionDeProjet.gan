@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?><project name="Untitled Gantt Project" company="" webLink="http://" view-date="2026-02-23" view-index="0" gantt-divider-location="300" resource-divider-location="300" version="3.3.3322" locale="fr_FR">
+    <description/>
+    <view zooming-state="default:4" id="gantt-chart">
+        <field id="tpd3" name="Nom" width="171" order="0"/>
+        <field id="tpd4" name="Date de début" width="64" order="1"/>
+        <field id="tpd5" name="Date de fin" width="64" order="2"/>
+        <field id="tpd15" name="Notes" width="20" order="3"/>
+        <option id="filter.completedTasks" value="false"/>
+        <option id="filter.dueTodayTasks" value="false"/>
+        <option id="filter.overdueTasks" value="false"/>
+        <option id="filter.inProgressTodayTasks" value="false"/>
+    </view>
+    <view id="resource-table">
+        <field id="0" name="Nom" width="210" order="0"/>
+        <field id="1" name="Rôle par défaut" width="86" order="1"/>
+    </view>
+    <!-- -->
+    <calendars>
+        <day-types>
+            <day-type id="0"/>
+            <day-type id="1"/>
+            <default-week id="1" name="default" sun="1" mon="0" tue="0" wed="0" thu="0" fri="0" sat="1"/>
+            <only-show-weekends value="false"/>
+            <overriden-day-types/>
+            <days/>
+        </day-types>
+    </calendars>
+    <tasks empty-milestones="true">
+        <taskproperties>
+            <taskproperty id="tpd0" name="type" type="default" valuetype="icon"/>
+            <taskproperty id="tpd1" name="priority" type="default" valuetype="icon"/>
+            <taskproperty id="tpd2" name="info" type="default" valuetype="icon"/>
+            <taskproperty id="tpd3" name="name" type="default" valuetype="text"/>
+            <taskproperty id="tpd4" name="begindate" type="default" valuetype="date"/>
+            <taskproperty id="tpd5" name="enddate" type="default" valuetype="date"/>
+            <taskproperty id="tpd6" name="duration" type="default" valuetype="int"/>
+            <taskproperty id="tpd7" name="completion" type="default" valuetype="int"/>
+            <taskproperty id="tpd8" name="coordinator" type="default" valuetype="text"/>
+            <taskproperty id="tpd9" name="predecessorsr" type="default" valuetype="text"/>
+        </taskproperties>
+        <task id="1" uid="f14dffe35a3b466c8855f2578b6f0250" name="Documentation préléminaire du projet" color="#8cb6ce" meeting="false" start="2026-01-01" duration="15" complete="100" expand="true">
+            <depend id="4" type="2" difference="0" hardness="Strong"/>
+            <task id="2" uid="a419bd1ca5be410092be46f5acd815f0" name="Cahier des charges" meeting="false" start="2026-01-01" duration="5" complete="100" expand="true">
+                <depend id="3" type="2" difference="0" hardness="Strong"/>
+            </task>
+            <task id="3" uid="8691db761bd742d2bb4c446201b5e447" name="Apprentissage" meeting="false" start="2026-01-08" duration="10" complete="100" expand="true">
+                <depend id="5" type="2" difference="0" hardness="Strong"/>
+            </task>
+        </task>
+        <task id="4" uid="3a4bcfaa3d0d43388e988ca6dbf37f72" name="Développement" color="#8cb6ce" meeting="false" start="2026-01-22" duration="53" complete="100" expand="true">
+            <depend id="9" type="2" difference="0" hardness="Strong"/>
+            <task id="5" uid="a702608458d0434bb3e3308a974a3022" name="MCD/MLD" meeting="false" start="2026-01-22" duration="1" complete="100" expand="true">
+                <depend id="6" type="2" difference="0" hardness="Strong"/>
+            </task>
+            <task id="6" uid="bb463c19eb014d5fa74732468e5ebe96" name="Réalisation de la BDD" meeting="false" start="2026-01-23" duration="2" complete="100" expand="true">
+                <depend id="7" type="2" difference="0" hardness="Strong"/>
+            </task>
+            <task id="7" uid="c327f361cc904a96b135703b7638c719" name="back-end/API" meeting="false" start="2026-01-27" duration="30" complete="100" expand="true">
+                <depend id="8" type="2" difference="0" hardness="Strong"/>
+            </task>
+            <task id="8" uid="ea57a01ac0764d478c37727fde43fee8" name="front-end/UI" meeting="false" start="2026-03-10" duration="20" complete="100" expand="true">
+                <depend id="10" type="2" difference="0" hardness="Strong"/>
+            </task>
+        </task>
+        <task id="9" uid="c0a0a6b6599c4d4ea34856f2b2a73a21" name="Déploiement" color="#8cb6ce" meeting="false" start="2026-04-07" duration="3" complete="100" expand="true">
+            <task id="10" uid="4978a59b7f6940798d6a929cbf512fdb" name="déploiement sur VPS" meeting="false" start="2026-04-07" duration="2" complete="100" expand="true">
+                <depend id="12" type="2" difference="0" hardness="Strong"/>
+            </task>
+            <task id="12" uid="1c349479691d406293cc5f68bec2b972" name="tests" meeting="false" start="2026-04-09" duration="1" complete="100" expand="true"/>
+        </task>
+    </tasks>
+    <resources>
+        <resource id="0" name="Robert--Biliec Iwan" function="Default:1" contacts="iwan.robert.biliec@gmail.com" phone=""/>
+    </resources>
+    <allocations/>
+    <vacations/>
+    <previous/>
+    <roles roleset-name="Default"/>
+</project>
