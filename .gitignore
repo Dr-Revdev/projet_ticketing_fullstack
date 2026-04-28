@@ -54,3 +54,9 @@ desktop.ini
 # Perso
 DocumentPerso/
 .claude
+
+
+# Docker
+compose.yaml
+Dockerfile
+.dockerignore
